@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Navigation } from './components/shared/Navigation';
+import { LiveChatWidget } from './components/shared/LiveChatWidget';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -80,13 +81,14 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="genie-ui-theme">
-      <Router>
+      <Router basename={import.meta.env.PROD ? '/Genie' : ''}>
         <AuthProvider>
           <div className="min-h-screen bg-background">
             <Navigation />
             <main>
               <AppRoutes />
             </main>
+            <LiveChatWidget />
           </div>
         </AuthProvider>
       </Router>

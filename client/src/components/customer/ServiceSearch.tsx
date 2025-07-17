@@ -69,7 +69,7 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="query" className="block text-sm font-medium text-foreground mb-1">
             Search
           </label>
           <input
@@ -79,12 +79,12 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
             value={filters.query}
             onChange={handleInputChange}
             placeholder="Search services..."
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="category" className="block text-sm font-medium text-foreground mb-1">
             Category
           </label>
           <select
@@ -92,7 +92,7 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
             name="category"
             value={filters.category}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Categories</option>
             {SERVICE_CATEGORIES.map((category) => (
@@ -104,7 +104,7 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
         </div>
 
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="location" className="block text-sm font-medium text-foreground mb-1">
             Location
           </label>
           <input
@@ -114,12 +114,12 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
             value={filters.location}
             onChange={handleInputChange}
             placeholder="Enter ZIP code or city"
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Price Range
           </label>
           <div className="flex space-x-2">
@@ -130,7 +130,7 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
               onChange={handleInputChange}
               placeholder="Min"
               min={0}
-              className="w-1/2 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-1/2 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="number"
@@ -139,7 +139,7 @@ export function ServiceSearch({ onSearch }: ServiceSearchProps) {
               onChange={handleInputChange}
               placeholder="Max"
               min={0}
-              className="w-1/2 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-1/2 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
