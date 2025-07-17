@@ -1,0 +1,36 @@
+# Node / npm
+node_modules/
+**/node_modules/
+
+# Build outputs
+build/
+dist/
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Mac / OS artifacts
+.DS_Store
+
+# IDE / Editor folders
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+
+# Production artifacts
+*.tgz
+
+# Firebase emulators / generated
+firebase-debug.log
+.firebaserc
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server/src/config/serviceAccountKey.json
+server/src/config/serviceAccountKey.json

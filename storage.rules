@@ -1,0 +1,54 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isProvider() {
+      return isAuthenticated() && 
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'provider';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Profile pictures
+    match /users/{userId}/profile.{extension} {
+      allow read: if true;
+      allow write: if isOwner(userId) || isAdmin();
+    }
+    
+    // Provider documents (certifications, licenses, etc.)
+    match /providers/{providerId}/documents/{document} {
+      allow read: if isAuthenticated() && (isOwner(providerId) || isAdmin());
+      allow write: if isOwner(providerId) || isAdmin();
+    }
+    
+    // Service images (public)
+    match /services/{serviceId}/{imageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Booking attachments (receipts, completion photos, etc.)
+    match /bookings/{bookingId}/{document} {
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/bookings/$(bookingId)).data.customerId == request.auth.uid ||
+        firestore.get(/databases/(default)/documents/bookings/$(bookingId)).data.providerId == request.auth.uid
+      );
+      allow write: if isAuthenticated() && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/bookings/$(bookingId)).data.providerId == request.auth.uid
+      );
+    }
+  }
+} 
