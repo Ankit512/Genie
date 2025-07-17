@@ -1,209 +1,67 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../contexts/AuthContext';
-import { logout } from '../../lib/firebase';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Moon, Sun } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
+import { useAuth } from '@/hooks/useAuth'
 
 export function Navigation() {
-  const { user, userRole } = useAuthContext();
-  const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Failed to logout:', error);
-    }
-  };
+  const { theme, setTheme } = useTheme()
+  const { user } = useAuth()
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-blue-600">Genie</span>
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="text-xl font-bold text-foreground">Genie</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link to="/services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Services
+            </Link>
+            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              About
+            </Link>
+            <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Contact
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden sm:flex sm:items-center sm:space-x-4">
-            {user ? (
+          {/* Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              className="h-9 w-9"
+            >
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+
+            {!user ? (
               <>
-                {userRole === 'customer' && (
-                  <>
-                    <Link
-                      to="/customer/services"
-                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                    >
-                      Find Services
-                    </Link>
-                    <Link
-                      to="/customer/bookings"
-                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                    >
-                      My Bookings
-                    </Link>
-                  </>
-                )}
-
-                {userRole === 'provider' && (
-                  <>
-                    <Link
-                      to="/provider/services"
-                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                    >
-                      My Services
-                    </Link>
-                    <Link
-                      to="/provider/bookings"
-                      className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                    >
-                      Bookings
-                    </Link>
-                  </>
-                )}
-
-                <Link
-                  to="/profile"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                >
-                  Profile
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                >
-                  Logout
-                </button>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link to="/register">Sign Up</Link>
+                </Button>
               </>
             ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md"
-                >
-                  Sign Up
-                </Link>
-              </>
+              <Button size="sm" asChild>
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
             )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="sm:hidden flex items-center">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {isMenuOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
       </div>
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
-            {user ? (
-              <>
-                {userRole === 'customer' && (
-                  <>
-                    <Link
-                      to="/customer/services"
-                      className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Find Services
-                    </Link>
-                    <Link
-                      to="/customer/bookings"
-                      className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      My Bookings
-                    </Link>
-                  </>
-                )}
-
-                {userRole === 'provider' && (
-                  <>
-                    <Link
-                      to="/provider/services"
-                      className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      My Services
-                    </Link>
-                    <Link
-                      to="/provider/bookings"
-                      className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Bookings
-                    </Link>
-                  </>
-                )}
-
-                <Link
-                  to="/profile"
-                  className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Profile
-                </Link>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMenuOpen(false);
-                  }}
-                  className="block w-full text-left text-gray-700 hover:text-blue-600 px-3 py-2"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="block text-gray-700 hover:text-blue-600 px-3 py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </nav>
-  );
+  )
 } 
