@@ -80,7 +80,7 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="genie-ui-theme">
-      <Router>
+      <Router basename={import.meta.env.PROD ? '/Genie' : ''}>
         <AuthProvider>
           <div className="min-h-screen bg-background">
             <Navigation />
