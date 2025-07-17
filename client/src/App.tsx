@@ -1,11 +1,13 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Navigation } from './components/shared/Navigation';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
+import { AboutPage } from './pages/AboutPage';
+import { ContactPage } from './pages/ContactPage';
 import { CustomerDashboard } from './pages/customer/CustomerDashboard';
 import { ProviderDashboard } from './pages/provider/ProviderDashboard';
 import { ServiceListPage } from './pages/customer/ServiceListPage';
@@ -19,8 +21,8 @@ function AppRoutes() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -29,6 +31,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/services" element={<ServiceListPage />} />
@@ -75,16 +79,18 @@ function AppRoutes() {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <div className="min-h-screen bg-gray-50">
-          <Navigation />
-          <main>
-            <AppRoutes />
-          </main>
-        </div>
-      </AuthProvider>
-    </Router>
+    <ThemeProvider defaultTheme="light" storageKey="genie-ui-theme">
+      <Router>
+        <AuthProvider>
+          <div className="min-h-screen bg-background">
+            <Navigation />
+            <main>
+              <AppRoutes />
+            </main>
+          </div>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 

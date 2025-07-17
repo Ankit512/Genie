@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TESTIMONIALS = [
   {
     content: "The service was excellent! The professional arrived on time and did a fantastic job with our home cleaning. Will definitely use again.",

@@ -1,180 +1,189 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import GoogleMaps from "../components/GoogleMaps";
 
-interface FeatureCardProps {
-  icon: string;
-  title: string;
-  description: string;
-}
+import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { 
+  Search, 
+  Shield, 
+  CreditCard, 
+  Clock, 
+  Home,
+  Wrench,
+  Scissors,
+  Zap,
+  ArrowRight
+} from 'lucide-react'
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => (
-  <div className="rounded-2xl bg-white p-8 shadow-lg">
-    <div className="mb-4 text-5xl text-primary-500">{icon}</div>
-    <h3 className="mb-2 text-xl font-bold text-gray-900">{title}</h3>
-    <p className="text-gray-600">{description}</p>
-  </div>
-);
-
-interface HowItWorksStepProps {
-  icon: string;
-  step: number;
-  title: string;
-  description: string;
-}
-
-const HowItWorksStep: React.FC<HowItWorksStepProps> = ({ icon, step, title, description }) => (
-  <div className="text-center">
-    <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary-500 text-4xl text-white">
-      {icon}
-    </div>
-    <p className="mb-2 font-bold text-primary-500">Step {step}</p>
-    <h3 className="mb-2 text-xl font-bold text-gray-900">{title}</h3>
-    <p className="text-gray-600">{description}</p>
-  </div>
-);
-
-const ServiceSearch = () => {
-  const [location, setLocation] = useState("Dublin");
-  const [service, setService] = useState("");
-  const navigate = useNavigate();
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate(`/services?location=${location}&service=${service}`);
-  };
-
-  return (
-    <form
-      onSubmit={handleSearch}
-      className="mt-8 flex flex-col items-center gap-4 rounded-xl bg-white p-8 shadow-2xl md:flex-row"
-    >
-      <input
-        type="text"
-        value={service}
-        onChange={(e) => setService(e.target.value)}
-        placeholder="What service do you need?"
-        className="w-full flex-grow rounded-lg border border-gray-300 p-4 text-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-        required
-      />
-      <select
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 p-4 text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 md:w-auto"
-      >
-        <option value="Dublin">Dublin</option>
-        <option value="City Centre">City Centre</option>
-        <option value="Temple Bar">Temple Bar</option>
-        <option value="Rathmines">Rathmines</option>
-        <option value="Dundrum">Dundrum</option>
-      </select>
-      <button
-        type="submit"
-        className="w-full rounded-lg bg-primary-500 px-8 py-4 text-lg font-bold text-white transition-colors hover:bg-primary-600 md:w-auto"
-      >
-        Search
-      </button>
-    </form>
-  );
-};
+const services = [
+  { name: 'Cleaning', icon: Home, price: '€30+' },
+  { name: 'Beauty', icon: Scissors, price: '€25+' },
+  { name: 'Repairs', icon: Wrench, price: '€50+' },
+  { name: 'Plumbing', icon: Zap, price: '€40+' },
+]
 
 export function LandingPage() {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-500 to-primary-600 text-white">
-        <div className="container mx-auto px-4 py-16 md:py-24">
+      <section className="pt-32 pb-20 parallax-bg">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="mb-6 text-4xl font-bold md:text-6xl">
-              Quality Home Services in Dublin
+            <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 fade-in">
+              Home Services Made{' '}
+              <span className="gradient-text">Simple</span>
             </h1>
-            <p className="mb-8 text-lg md:text-xl">
-              Book trusted professionals for all your home needs
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed fade-in-delay">
+              Book trusted professionals for all your home needs in Ireland. 
+              Clean, reliable, and easy to use.
             </p>
-            <div className="flex justify-center gap-4 mb-8">
-              <Link
-                to="/register"
-                className="rounded-lg bg-white text-primary-500 px-6 py-3 font-semibold hover:bg-gray-100 transition-colors"
-              >
-                Sign Up
-              </Link>
-              <Link
-                to="/login"
-                className="rounded-lg border-2 border-white text-white px-6 py-3 font-semibold hover:bg-white hover:text-primary-500 transition-colors"
-              >
-                Login
-              </Link>
+            
+            {/* Search Bar */}
+            <div className="max-w-xl mx-auto mb-16 fade-in-delay-2">
+              <div className="flex flex-col sm:flex-row gap-3 p-1 bg-background rounded-xl shadow-sm border hover-lift">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="What do you need help with?"
+                    className="pl-10 border-0 focus:ring-0 bg-transparent"
+                  />
+                </div>
+                <Button size="lg" className="px-8 shrink-0 smooth-button">
+                  Find Services
+                </Button>
+              </div>
             </div>
-            <ServiceSearch />
+
+            {/* Popular Services */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto mb-20 fade-in-delay-3">
+              {services.map((service, index) => (
+                <Card key={service.name} className="hover-lift transition-all duration-300 cursor-pointer border-0 bg-muted/30 scale-in" style={{ animationDelay: `${0.8 + index * 0.1}s` }}>
+                  <CardContent className="p-6 text-center">
+                    <service.icon className="h-8 w-8 text-primary mx-auto mb-3 floating" style={{ animationDelay: `${index * 0.5}s` }} />
+                    <h3 className="font-medium text-sm mb-1">{service.name}</h3>
+                    <p className="text-xs text-muted-foreground">{service.price}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center fade-in-delay-3">
+              <Button size="lg" className="px-8 smooth-button hover-lift" asChild>
+                <Link to="/services">
+                  Browse All Services
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" className="px-8 smooth-button hover-lift" asChild>
+                <Link to="/register">
+                  Get Started
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-gray-900 md:text-4xl">
-            Why Choose Genie?
-          </h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            <FeatureCard
-              icon="✓"
-              title="Vetted Professionals"
-              description="All our service providers are background-checked and verified"
-            />
-            <FeatureCard
-              icon="💰"
-              title="Transparent Pricing"
-              description="See prices upfront before booking any service"
-            />
-            <FeatureCard
-              icon="⭐"
-              title="Quality Guarantee"
-              description="100% satisfaction guarantee on all services"
-            />
+      {/* Simple Features */}
+      <section className="py-20 bg-muted/20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="text-center fade-in slide-in-left">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 hover-lift">
+                <Shield className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Vetted Professionals</h3>
+              <p className="text-muted-foreground text-sm">
+                All service providers are verified and background checked
+              </p>
+            </div>
+
+            <div className="text-center fade-in-delay">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 hover-lift">
+                <CreditCard className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Transparent Pricing</h3>
+              <p className="text-muted-foreground text-sm">
+                See upfront pricing with no hidden fees
+              </p>
+            </div>
+
+            <div className="text-center fade-in slide-in-right">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 hover-lift">
+                <Clock className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Quality Guarantee</h3>
+              <p className="text-muted-foreground text-sm">
+                30-day warranty on all services
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="bg-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-gray-900 md:text-4xl">
-            How It Works
-          </h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            <HowItWorksStep
-              icon="🔍"
-              step={1}
-              title="Search & Select"
-              description="Choose from our wide range of home services"
-            />
-            <HowItWorksStep
-              icon="📅"
-              step={2}
-              title="Book & Schedule"
-              description="Pick a convenient time that works for you"
-            />
-            <HowItWorksStep
-              icon="✨"
-              step={3}
-              title="Relax & Enjoy"
-              description="Our professionals will take care of everything"
-            />
+      {/* How It Works */}
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 fade-in">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+            <p className="text-xl text-muted-foreground">
+              Simple, fast, and reliable
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center fade-in-delay">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-semibold hover-lift floating">
+                1
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Book</h3>
+              <p className="text-muted-foreground text-sm">
+                Choose your service and schedule
+              </p>
+            </div>
+
+            <div className="text-center fade-in-delay-2">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-semibold hover-lift floating" style={{ animationDelay: '0.5s' }}>
+                2
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Relax</h3>
+              <p className="text-muted-foreground text-sm">
+                Professional arrives on time
+              </p>
+            </div>
+
+            <div className="text-center fade-in-delay-3">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-semibold hover-lift floating" style={{ animationDelay: '1s' }}>
+                3
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Enjoy</h3>
+              <p className="text-muted-foreground text-sm">
+                Pay securely after completion
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-gray-900 md:text-4xl">
-            Find Services Near You
+      {/* Simple CTA */}
+      <section className="py-20 bg-muted/20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 fade-in">
+            Ready to get started?
           </h2>
-          <GoogleMaps />
+          <p className="text-xl text-muted-foreground mb-8 fade-in-delay">
+            Join thousands of satisfied customers across Ireland
+          </p>
+          <div className="fade-in-delay-2">
+            <Button size="lg" className="px-8 smooth-button hover-lift" asChild>
+              <Link to="/register">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
-  );
+  )
 } 

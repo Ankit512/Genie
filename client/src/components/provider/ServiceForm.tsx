@@ -35,7 +35,7 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
   'other',
 ];
 
-export function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
+export function ServiceForm({ initialData, onSubmit: _onSubmit }: ServiceFormProps) {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [loading, setLoading] = useState(false);

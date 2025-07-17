@@ -12,7 +12,7 @@ export default defineConfig({
       "@": new URL("./src", import.meta.url).pathname,
     },
   },
-  base: process.env.GITHUB_ACTIONS ? '/Genie/' : '/',
+  base: process.env.GITHUB_ACTIONS ? '/Genie-master/' : '/', // GitHub Pages repository name
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
