@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, Query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { ServiceSearch, type ServiceFilters } from '../../components/customer/ServiceSearch';

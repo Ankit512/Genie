@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { signInWithGoogle, signInWithFacebook, signInWithTwitter, loginWithEmail, resetPassword } from '../../lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 export function LoginForm() {
   const navigate = useNavigate();

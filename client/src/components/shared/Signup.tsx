@@ -55,19 +55,7 @@ export default function Signup() {
     }
   };
 
-  const validate = () => {
-    if (!form.email.match(/^[^@]+@[^@]+\.[^@]+$/)) return 'Valid email required';
-    if (!form.password || form.password.length < 6) return 'Password min 6 chars';
-    if (!form.name) return 'Name required';
-    if (!form.phone) return 'Phone required';
-    if (!form.address) return 'Address required';
-    if (!form.consentedGDPR) return 'GDPR consent required';
-    if (role === 'provider') {
-      if (!form.services.length) return 'Select at least one service';
-      if (!form.vettingAgreement) return 'Vetting agreement required';
-    }
-    return '';
-  };
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,9 +77,8 @@ export default function Signup() {
     }
 
     try {
-      let res;
       if (role === 'customer') {
-        res = await api.post('/api/auth/register/customer', {
+        await api.post('/api/auth/register/customer', {
           email: form.email,
           password: form.password,
           name: form.name,
@@ -113,7 +100,7 @@ export default function Signup() {
         for (const file of form.certificates) {
           data.append('certificates', file);
         }
-        res = await api.post('/api/auth/register/provider', data, {
+        await api.post('/api/auth/register/provider', data, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
