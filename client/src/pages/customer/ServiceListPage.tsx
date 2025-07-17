@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, Query, orderBy } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { ServiceSearch, type ServiceFilters } from '../../components/customer/ServiceSearch';
 import { ServiceCard } from '../../components/customer/ServiceCard';
 import { GuestBookingModal } from '../../components/customer/GuestBookingModal';

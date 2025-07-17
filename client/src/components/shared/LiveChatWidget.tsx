@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, KeyboardEvent } from 'react';
 
 interface Message {
   id: string;
@@ -9,7 +9,6 @@ interface Message {
 
 interface LiveChatWidgetProps {
   isOpen?: boolean;
-  onToggle?: () => void;
 }
 
 const PREDEFINED_RESPONSES = {
@@ -22,7 +21,7 @@ const PREDEFINED_RESPONSES = {
   'support': 'For technical support, you can contact our team at support@genie.com or call +1-800-GENIE-1.'
 };
 
-export function LiveChatWidget({ isOpen = false, onToggle }: LiveChatWidgetProps) {
+export function LiveChatWidget({ isOpen = false }: LiveChatWidgetProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -83,7 +82,7 @@ export function LiveChatWidget({ isOpen = false, onToggle }: LiveChatWidgetProps
     return 'Thanks for your message! Our team will get back to you shortly. In the meantime, you can browse our services or check our FAQ section.';
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
