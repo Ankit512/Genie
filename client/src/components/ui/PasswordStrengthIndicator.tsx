@@ -1,4 +1,3 @@
-import React from 'react';
 import { validatePasswordStrength, getPasswordStrengthColor, getPasswordStrengthBgColor } from '../../lib/passwordValidation';
 
 interface PasswordStrengthIndicatorProps {
