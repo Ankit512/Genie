@@ -7,4 +7,14 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
+  resolve: {
+    alias: {
+      "@": new URL("./src", import.meta.url).pathname,
+    },
+  },
+  base: process.env.NODE_ENV === 'production' ? '/Genie-master/' : '/', // GitHub Pages repository name
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  },
 }); 
