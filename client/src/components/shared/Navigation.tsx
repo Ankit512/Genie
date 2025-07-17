@@ -1,7 +1,9 @@
 
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Moon, Sun } from 'lucide-react'
+import { Moon, Sun, User } from 'lucide-react'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { logoutUser } from '@/utils/logoutUser'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -46,18 +48,30 @@ export function Navigation() {
             </Button>
 
             {!user ? (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link to="/register">Sign Up</Link>
-                </Button>
-              </>
-            ) : (
               <Button size="sm" asChild>
-                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/login">Get Started</Link>
               </Button>
+
+                
+
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={logoutUser}>Log out</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
             )}
           </div>
         </div>

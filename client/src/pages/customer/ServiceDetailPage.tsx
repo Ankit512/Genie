@@ -140,7 +140,7 @@ export function ServiceDetailPage() {
             )}
             <div className="p-6">
               <div className="flex items-start justify-between">
-                <h1 className="text-2xl font-bold text-gray-900">{service.title}</h1>
+                <h1 className="text-2xl font-bold text-foreground">{service.title}</h1>
                 <div className="flex items-center">
                   {service.rating && (
                     <>
@@ -198,7 +198,7 @@ export function ServiceDetailPage() {
 
         {/* Booking Form */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Book this Service</h2>
+          <h2 className="text-xl font-bold text-foreground mb-6">Book this Service</h2>
 
           {bookingSuccess ? (
             <div className="p-4 bg-green-100 text-green-700 rounded-md">
