@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { applyActionCode, checkActionCode, getAuth } from 'firebase/auth';
+import { applyActionCode, getAuth } from 'firebase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
@@ -24,9 +24,6 @@ export function EmailVerificationPage() {
       }
 
       try {
-        // Check the action code is valid
-        const info = await checkActionCode(auth, oobCode);
-        
         // Apply the verification code
         await applyActionCode(auth, oobCode);
         
