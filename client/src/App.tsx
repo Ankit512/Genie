@@ -5,6 +5,7 @@ import { Navigation } from './components/shared/Navigation';
 import { LiveChatWidget } from './components/shared/LiveChatWidget';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
+import { CustomAuthForm } from './components/auth/CustomAuthForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { AboutPage } from './pages/AboutPage';
@@ -13,6 +14,7 @@ import { CustomerDashboard } from './pages/customer/CustomerDashboard';
 import { ProviderDashboard } from './pages/provider/ProviderDashboard';
 import { ServiceListPage } from './pages/customer/ServiceListPage';
 import { ServiceDetailPage } from './pages/customer/ServiceDetailPage';
+import { EmailVerificationPage } from './pages/EmailVerificationPage';
 import { useAuth } from './hooks/useAuth';
 
 function AppRoutes() {
@@ -36,6 +38,8 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
+      <Route path="/auth" element={<CustomAuthForm />} />
+      <Route path="/verify-email" element={<EmailVerificationPage />} />
       <Route path="/services" element={<ServiceListPage />} />
       <Route path="/services/:id" element={<ServiceDetailPage />} />
       

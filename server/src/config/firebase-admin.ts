@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
 import 'dotenv/config';
+import { readFileSync } from 'fs';
 
 // Service account credentials are supplied via the FIREBASE_ADMIN_SA environment
 // variable as a JSON string or via GOOGLE_APPLICATION_CREDENTIALS pointing to a
@@ -12,9 +13,10 @@ if (process.env.FIREBASE_ADMIN_SA) {
     JSON.parse(process.env.FIREBASE_ADMIN_SA)
   );
 } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  credential = admin.credential.cert(
-    require(process.env.GOOGLE_APPLICATION_CREDENTIALS)
+  const serviceAccount = JSON.parse(
+    readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8')
   );
+  credential = admin.credential.cert(serviceAccount);
 } else {
   throw new Error(
     'Firebase admin credentials not provided. Set FIREBASE_ADMIN_SA or GOOGLE_APPLICATION_CREDENTIALS.'

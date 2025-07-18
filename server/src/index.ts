@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 
 // Import routes
 import authRoutes from './routes/auth.js';
+import authCustomRoutes from './routes/auth-custom.js';
 import servicesRoutes from './routes/services.js';
 import bookingsRoutes from './routes/bookings.js';
 import searchRoutes from './routes/search.js';
@@ -30,6 +31,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', authCustomRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/search', searchRoutes);

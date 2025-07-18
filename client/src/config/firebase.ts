@@ -18,7 +18,7 @@ import { getStorage } from 'firebase/storage';
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'localhost:5173',
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
@@ -60,7 +60,11 @@ export const signInWithTwitter = () => signInWithPopup(auth, twitterProvider);
 
 // Email Verification
 export const sendVerificationEmail = (user: User) => {
-  return sendEmailVerification(user);
+  const actionCodeSettings = {
+    url: `${window.location.origin}/verify-email`,
+    handleCodeInApp: true
+  };
+  return sendEmailVerification(user, actionCodeSettings);
 };
 
 // Get current user's ID token for backend requests
