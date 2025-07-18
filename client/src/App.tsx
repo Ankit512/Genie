@@ -14,6 +14,7 @@ import { CustomerDashboard } from './pages/customer/CustomerDashboard';
 import { ProviderDashboard } from './pages/provider/ProviderDashboard';
 import { ServiceListPage } from './pages/customer/ServiceListPage';
 import { ServiceDetailPage } from './pages/customer/ServiceDetailPage';
+import { AdminTestPage } from './pages/AdminTestPage';
 import { useAuth } from './hooks/useAuth';
 
 function AppRoutes() {
@@ -39,6 +40,7 @@ function AppRoutes() {
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/services" element={<ServiceListPage />} />
       <Route path="/services/:id" element={<ServiceDetailPage />} />
+      <Route path="/admin-test" element={<AdminTestPage />} />
       
       {/* Customer Routes */}
       <Route

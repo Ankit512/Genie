@@ -65,14 +65,6 @@
 }
 
 @layer components {
-  /* Ensure input text is always visible */
-  /* Dark mode overrides for legacy hard-coded colors */
-  .dark .text-gray-900 {
-    @apply text-foreground;
-  }
-  .dark .bg-white {
-    @apply bg-background;
-  }
   /* Fade in animation */
   .fade-in {
     opacity: 0;

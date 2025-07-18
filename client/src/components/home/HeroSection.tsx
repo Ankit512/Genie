@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ServiceCategory } from '../../types/service';
 
@@ -53,10 +53,27 @@ const FEATURED_CATEGORIES: Array<{
   }
 ];
 
+const ANIMATED_WORDS = ['Simple', 'Easy', 'Fast', 'Affordable'];
+
 export function HeroSection() {
   const navigate = useNavigate();
   const [postcode, setPostcode] = useState('');
   const [showPostcodeResults, setShowPostcodeResults] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Animated text effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentWordIndex((prev: number) => (prev + 1) % ANIMATED_WORDS.length);
+        setIsAnimating(false);
+      }, 300); // Half of the fade duration
+    }, 2000); // Change word every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,6 +100,45 @@ export function HeroSection() {
 
   return (
     <div className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 min-h-screen">
+      {/* Custom CSS for animations */}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+          0% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        .animate-word {
+          animation: fadeInOut 0.6s ease-in-out;
+        }
+        
+        .animate-word.fade-out {
+          animation: fadeOut 0.6s ease-in-out;
+        }
+        
+        .animated-text {
+          display: inline-block;
+          min-width: 300px;
+          text-align: left;
+        }
+        
+        @media (max-width: 768px) {
+          .animated-text {
+            min-width: 200px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .animated-text {
+            min-width: 150px;
+          }
+        }
+      `}</style>
+
       {/* Background Video/Pattern */}
       <div className="absolute inset-0 bg-black opacity-30"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
@@ -103,16 +159,26 @@ export function HeroSection() {
               Available Today • Same-Day Service
             </div>
 
-            <h1 className="text-5xl tracking-tight font-extrabold text-white sm:text-6xl md:text-7xl lg:text-8xl">
-              <span className="block">Book in</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">
-                60 Seconds
-              </span>
-            </h1>
+            {/* Animated Headline */}
+            <div className="text-5xl tracking-tight font-extrabold text-white sm:text-6xl md:text-7xl lg:text-8xl mb-4">
+              <div className="block">Home Services Made</div>
+              <div className="animated-text">
+                <span 
+                  className={`block text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300 animate-word ${isAnimating ? 'fade-out' : ''}`}
+                  key={currentWordIndex}
+                >
+                  {ANIMATED_WORDS[currentWordIndex]}
+                </span>
+              </div>
+            </div>
             
-            <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-100 sm:text-2xl md:mt-8">
-              Trusted local service professionals for all your home needs
-            </p>
+            {/* Fixed Tagline */}
+            <div className="mt-6 max-w-4xl mx-auto text-xl text-gray-100 sm:text-2xl md:mt-8">
+              <div className="leading-relaxed">
+                <div>Book trusted professionals for all your home needs in Ireland.</div>
+                <div className="mt-2">Clean, reliable, and easy to use.</div>
+              </div>
+            </div>
 
             {/* Price Transparency */}
             <div className="mt-8 text-center">
