@@ -252,7 +252,7 @@ export class MockDataService {
   }
 
   // Calendar Events
-  static async getCalendarEvents(startDate: Date, endDate: Date): Promise<CalendarEvent[]> {
+  static async getCalendarEvents(_startDate: Date, _endDate: Date): Promise<CalendarEvent[]> {
     return new Promise(resolve => {
       setTimeout(() => {
         const events = mockBookings

@@ -83,7 +83,6 @@ export function EarningsPayments() {
     }
   });
 
-  const totalEarnings = filteredEarnings.reduce((sum, earning) => sum + earning.amount, 0);
   const paidEarnings = filteredEarnings.filter(e => e.status === 'paid').reduce((sum, earning) => sum + earning.amount, 0);
   const pendingEarnings = filteredEarnings.filter(e => e.status === 'pending').reduce((sum, earning) => sum + earning.amount, 0);
 

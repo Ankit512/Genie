@@ -9,9 +9,6 @@ import {
 } from '../../constants/statusOptions';
 import { Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
-type BookingStatus = keyof typeof BOOKING_STATUSES;
-type PaymentStatus = keyof typeof PAYMENT_STATUSES;
-
 interface StatusBadgeProps {
   status: string;
   type?: 'booking' | 'payment';
