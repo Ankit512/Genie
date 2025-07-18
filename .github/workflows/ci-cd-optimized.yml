@@ -1,0 +1,210 @@
+name: 🚀 Optimized CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch: # Allow manual triggering
+
+# Sets permissions for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+  CACHE_VERSION: v1 # Increment this to invalidate caches
+
+jobs:
+  # Job 1: Install dependencies (runs in parallel for client and server)
+  install-deps:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [client, server]
+    
+    steps:
+    - name: 📦 Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './${{ matrix.workspace }}/package-lock.json'
+    
+    - name: 📁 Cache node_modules
+      uses: actions/cache@v4
+      id: cache-node-modules
+      with:
+        path: ${{ matrix.workspace }}/node_modules
+        key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-${{ matrix.workspace }}-node_modules-${{ hashFiles(format('./{0}/package-lock.json', matrix.workspace)) }}
+        restore-keys: |
+          ${{ env.CACHE_VERSION }}-${{ runner.os }}-${{ matrix.workspace }}-node_modules-
+    
+    - name: 🚀 Install dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      working-directory: ./${{ matrix.workspace }}
+      run: |
+        npm ci --prefer-offline --no-audit --no-fund --silent
+    
+    - name: 📊 Log installation stats
+      working-directory: ./${{ matrix.workspace }}
+      run: |
+        echo "Dependencies installed for ${{ matrix.workspace }}"
+        npm ls --depth=0 --silent || true
+
+  # Job 2: Build and test client
+  build-client:
+    needs: install-deps
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './client/package-lock.json'
+    
+    - name: 📁 Restore node_modules cache
+      uses: actions/cache@v4
+      with:
+        path: client/node_modules
+        key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-client-node_modules-${{ hashFiles('client/package-lock.json') }}
+        restore-keys: |
+          ${{ env.CACHE_VERSION }}-${{ runner.os }}-client-node_modules-
+    
+    - name: 🚀 Install dependencies (if cache miss)
+      working-directory: ./client
+      run: |
+        if [ ! -d "node_modules" ]; then
+          npm ci --prefer-offline --no-audit --no-fund --silent
+        fi
+    
+    - name: 📁 Cache TypeScript build
+      uses: actions/cache@v4
+      with:
+        path: client/node_modules/.cache
+        key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-client-ts-${{ hashFiles('client/tsconfig.json', 'client/src/**/*.{ts,tsx}') }}
+    
+    - name: 🏗️ Build client
+      working-directory: ./client
+      run: npm run build
+    
+    - name: 📦 Upload client build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: client-build
+        path: client/dist
+        retention-days: 1
+
+  # Job 3: Build and test server
+  build-server:
+    needs: install-deps
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './server/package-lock.json'
+    
+    - name: 📁 Restore node_modules cache
+      uses: actions/cache@v4
+      with:
+        path: server/node_modules
+        key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-server-node_modules-${{ hashFiles('server/package-lock.json') }}
+        restore-keys: |
+          ${{ env.CACHE_VERSION }}-${{ runner.os }}-server-node_modules-
+    
+    - name: 🚀 Install dependencies (if cache miss)
+      working-directory: ./server
+      run: |
+        if [ ! -d "node_modules" ]; then
+          npm ci --prefer-offline --no-audit --no-fund --silent
+        fi
+    
+    - name: 📁 Cache TypeScript build
+      uses: actions/cache@v4
+      with:
+        path: server/node_modules/.cache
+        key: ${{ env.CACHE_VERSION }}-${{ runner.os }}-server-ts-${{ hashFiles('server/tsconfig.json', 'server/src/**/*.{ts,js}') }}
+    
+    - name: 🏗️ Build server
+      working-directory: ./server
+      run: npm run build
+    
+    - name: 📦 Upload server build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-build
+        path: server/dist
+        retention-days: 1
+
+  # Job 4: Deploy to GitHub Pages (only on master/main)
+  deploy:
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    needs: [build-client, build-server]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: 📦 Download client build
+      uses: actions/download-artifact@v4
+      with:
+        name: client-build
+        path: ./dist
+    
+    - name: 🔧 Setup Pages
+      uses: actions/configure-pages@v5
+    
+    - name: 📦 Upload to Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./dist
+    
+    - name: 🚀 Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  # Job 5: Performance monitoring
+  performance-check:
+    needs: build-client
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Download client build
+      uses: actions/download-artifact@v4
+      with:
+        name: client-build
+        path: ./dist
+    
+    - name: 📊 Bundle size analysis
+      run: |
+        echo "## 📊 Bundle Analysis" >> $GITHUB_STEP_SUMMARY
+        echo "Build completed successfully!" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Bundle Size" >> $GITHUB_STEP_SUMMARY
+        du -sh ./dist/* | sort -hr >> $GITHUB_STEP_SUMMARY
+        echo "### 🎯 Performance Tips" >> $GITHUB_STEP_SUMMARY
+        echo "- Monitor bundle size growth" >> $GITHUB_STEP_SUMMARY
+        echo "- Use code splitting for large components" >> $GITHUB_STEP_SUMMARY
+        echo "- Consider lazy loading for routes" >> $GITHUB_STEP_SUMMARY 

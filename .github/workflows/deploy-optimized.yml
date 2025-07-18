@@ -1,0 +1,79 @@
+name: 🚀 Fast Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch: # Allows manual triggering
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup Node.js with caching
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './client/package-lock.json'
+    
+    - name: 📁 Cache node_modules
+      uses: actions/cache@v4
+      id: cache-node-modules
+      with:
+        path: client/node_modules
+        key: ${{ runner.os }}-client-node_modules-${{ hashFiles('client/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-client-node_modules-
+        
+    - name: 🚀 Install dependencies (optimized)
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      working-directory: ./client
+      run: |
+        npm ci --prefer-offline --no-audit --no-fund --silent
+    
+    - name: 📁 Cache TypeScript/Vite build
+      uses: actions/cache@v4
+      with:
+        path: |
+          client/node_modules/.cache
+          client/dist
+        key: ${{ runner.os }}-client-build-${{ hashFiles('client/src/**/*.{ts,tsx,js,jsx}', 'client/tsconfig.json', 'client/vite.config.ts') }}
+        
+    - name: 🏗️ Build with caching
+      working-directory: ./client
+      run: npm run build
+      
+    - name: 🔧 Setup Pages
+      uses: actions/configure-pages@v5
+      
+    - name: 📦 Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './client/dist'
+        
+    - name: 🚀 Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4 
