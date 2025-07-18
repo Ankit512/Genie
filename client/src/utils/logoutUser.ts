@@ -4,8 +4,9 @@ import { signOut } from 'firebase/auth'
 export const logoutUser = async () => {
   try {
     await signOut(auth)
-    // Optionally, you can redirect or reload to clear state
-    window.location.href = '/'
+    // Redirect to the correct base path for GitHub Pages
+    const basePath = import.meta.env.PROD ? '/Genie/' : '/'
+    window.location.href = basePath
   } catch (error) {
     console.error('Failed to log out:', error)
   }
