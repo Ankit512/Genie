@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -22,7 +23,25 @@ const services = [
   { name: 'Plumbing', icon: Zap, price: '€40+' },
 ]
 
+const ANIMATED_WORDS = ['Simple', 'Easy', 'Fast', 'Affordable'];
+
 export function LandingPage() {
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Animated text effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentWordIndex((prev) => (prev + 1) % ANIMATED_WORDS.length);
+        setIsAnimating(false);
+      }, 300); // Half of the fade duration
+    }, 2000); // Change word every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -31,12 +50,21 @@ export function LandingPage() {
           <div className="text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 fade-in">
               Home Services Made{' '}
-              <span className="gradient-text">Simple</span>
+              <span className="relative inline-block w-[280px] sm:w-[400px] text-center">
+                <span 
+                  className={`gradient-text transition-all duration-500 ${
+                    isAnimating ? 'opacity-0 transform translate-y-2' : 'opacity-100 transform translate-y-0'
+                  }`}
+                  key={currentWordIndex}
+                >
+                  {ANIMATED_WORDS[currentWordIndex]}
+                </span>
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed fade-in-delay">
-              Book trusted professionals for all your home needs in Ireland. 
-              Clean, reliable, and easy to use.
-            </p>
+            <div className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed fade-in-delay">
+              <div className="whitespace-nowrap">Book trusted professionals for all your home needs in Ireland.</div>
+              <div className="mt-2">Clean, reliable, and easy to use.</div>
+            </div>
             
             {/* Search Bar */}
             <div className="max-w-xl mx-auto mb-16 fade-in-delay-2">
