@@ -1,13 +1,14 @@
 [build]
   publish = "client/dist"
-  command = "cd client && npm run build"
+  command = "cd client && npm ci --force && npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # Production environment settings
 [context.production]
-  command = "cd client && npm run build"
+  command = "cd client && npm ci --force && npm run build"
   
 [context.production.environment]
   VITE_FIREBASE_API_KEY = "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y"
@@ -21,7 +22,7 @@
 
 # Test/staging environment settings
 [context.branch-deploy]
-  command = "cd client && npm run build"
+  command = "cd client && npm ci --force && npm run build"
   
 [context.branch-deploy.environment]
   VITE_FIREBASE_API_KEY = "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y"
