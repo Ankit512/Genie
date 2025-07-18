@@ -101,7 +101,7 @@ export function HeroSection() {
   return (
     <div className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 min-h-screen">
       {/* Custom CSS for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInOut {
           0% { opacity: 0; transform: translateY(10px); }
           100% { opacity: 1; transform: translateY(0); }
