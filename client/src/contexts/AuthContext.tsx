@@ -8,11 +8,13 @@ interface AuthContextType {
   user: User | null;
   userRole: 'customer' | 'provider' | null;
   loading: boolean;
+  emailVerified: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   userRole: null,
+  emailVerified: false,
   loading: true
 });
 
@@ -31,6 +33,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<'customer' | 'provider' | null>(null);
+  const [emailVerified, setEmailVerified] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,15 +42,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (user) {
         try {
+          // Check email verification status
+          await user.reload(); // Refresh user data
+          setEmailVerified(user.emailVerified);
+          
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             setUserRole(userDoc.data().userType);
           }
         } catch (error) {
-          console.error('Error fetching user role:', error);
+          console.error('Error fetching user data:', error);
+          setEmailVerified(false);
         }
       } else {
         setUserRole(null);
+        setEmailVerified(false);
       }
       
       setLoading(false);
@@ -59,6 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = {
     user,
     userRole,
+    emailVerified,
     loading
   };
 

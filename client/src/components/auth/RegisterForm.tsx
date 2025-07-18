@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { doc, setDoc } from 'firebase/firestore';
-import { registerWithEmail, signInWithGoogle, signInWithFacebook, signInWithTwitter, sendVerificationEmail, db } from '../../config/firebase';
+import { registerWithEmailSecure, signInWithGoogle, signInWithFacebook, signInWithTwitter, sendVerificationEmail } from '../../lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,15 +13,6 @@ interface FormData {
   firstName: string;
   lastName: string;
   userType: 'customer' | 'provider';
-}
-
-interface UserData {
-  firstName: string;
-  lastName: string;
-  email: string | null;
-  userType: 'customer' | 'provider';
-  createdAt: string;
-  updatedAt: string;
 }
 
 export function RegisterForm() {
@@ -60,20 +50,16 @@ export function RegisterForm() {
     }
 
     try {
-      const userCredential = await registerWithEmail(formData.email, formData.password);
-      setRegisteredUser(userCredential);
-      setVerificationSent(true);
-
-      const userData: UserData = {
+      const userData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: userCredential.user.email,
-        userType: formData.userType,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        userType: formData.userType
       };
 
-      await setDoc(doc(db, 'users', userCredential.user.uid), userData);
+      // Use secure registration with automatic rollback on failure
+      const userCredential = await registerWithEmailSecure(formData.email, formData.password, userData);
+      setRegisteredUser(userCredential);
+      setVerificationSent(true);
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {

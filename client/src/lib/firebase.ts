@@ -40,8 +40,12 @@ const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
 
-// Configure providers
-googleProvider.setCustomParameters({ prompt: 'select_account' });
+// Configure providers for development and production
+googleProvider.setCustomParameters({ 
+  prompt: 'select_account',
+  // Allow localhost for development
+  redirect_uri: window.location.origin
+});
 facebookProvider.setCustomParameters({ 'display': 'popup' });
 
 // Auth helpers
@@ -57,10 +61,46 @@ export const loginWithEmail = async (email: string, password: string): Promise<U
 export const registerWithEmail = async (email: string, password: string): Promise<UserCredential> => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    // Send email verification
+    // Send email verification immediately
     await sendEmailVerification(result.user);
     return result;
   } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+// Secure registration function that handles rollback on failure
+export const registerWithEmailSecure = async (email: string, password: string, userData: any): Promise<UserCredential> => {
+  let userCredential: UserCredential | null = null;
+  
+  try {
+    // Step 1: Create Firebase user
+    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Step 2: Send email verification
+    await sendEmailVerification(userCredential.user);
+    
+    // Step 3: Create user profile in Firestore
+    const userDoc = doc(db, 'users', userCredential.user.uid);
+    await setDoc(userDoc, {
+      ...userData,
+      email: userCredential.user.email,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      emailVerified: false
+    });
+    
+    return userCredential;
+  } catch (error: any) {
+    // Rollback: Delete the Firebase user if profile creation failed
+    if (userCredential?.user) {
+      try {
+        await userCredential.user.delete();
+        console.log('Rolled back user creation due to error:', error.message);
+      } catch (deleteError) {
+        console.error('Failed to rollback user creation:', deleteError);
+      }
+    }
     throw new Error(error.message);
   }
 };
@@ -71,7 +111,15 @@ export const signInWithGoogle = async () => {
     await createOrUpdateUserProfile(result);
     return result.user;
   } catch (error: any) {
-    throw new Error(error.message);
+    // Handle specific Google OAuth errors
+    if (error.code === 'auth/popup-blocked') {
+      throw new Error('Popup was blocked. Please allow popups for this site and try again.');
+    } else if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('Sign-in was cancelled. Please try again.');
+    } else if (error.code === 'auth/unauthorized-domain') {
+      throw new Error('This domain is not authorized for Google sign-in. Please contact support.');
+    }
+    throw new Error(error.message || 'Failed to sign in with Google');
   }
 };
 
@@ -130,6 +178,22 @@ const createOrUpdateUserProfile = async (credential: UserCredential) => {
     emailVerified: user.emailVerified,
     provider: providerData?.providerId
   }, { merge: true });
+};
+
+// Check if user's email is verified
+export const checkEmailVerification = async (user: User): Promise<boolean> => {
+  await user.reload();
+  return user.emailVerified;
+};
+
+// Enforce email verification before allowing access
+export const requireEmailVerification = async (user: User): Promise<void> => {
+  if (!user.emailVerified) {
+    await user.reload(); // Refresh user data
+    if (!user.emailVerified) {
+      throw new Error('Please verify your email before accessing the application.');
+    }
+  }
 };
 
 export const logout = () => {

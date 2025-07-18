@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithGoogle, signInWithFacebook, signInWithTwitter, loginWithEmail, resetPassword } from '../../lib/firebase';
+import { signInWithGoogle, signInWithFacebook, signInWithTwitter, loginWithEmail, resetPassword, requireEmailVerification } from '../../lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,11 +21,10 @@ export function LoginForm() {
 
     try {
       const result = await loginWithEmail(email, password);
-      if (!result.user.emailVerified) {
-        setError('Please verify your email before logging in.');
-        setLoading(false);
-        return;
-      }
+      
+      // Enforce email verification
+      await requireEmailVerification(result.user);
+      
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
@@ -45,7 +44,14 @@ export function LoginForm() {
         twitter: signInWithTwitter
       };
 
-      await socialLoginMethods[provider]();
+      const user = await socialLoginMethods[provider]();
+      
+      // Social logins are typically pre-verified, but check anyway
+      if (user && !user.emailVerified) {
+        setError('Please verify your email before accessing the application.');
+        return;
+      }
+      
       navigate('/');
     } catch (err: any) {
       setError(err.message || `Failed to login with ${provider}`);

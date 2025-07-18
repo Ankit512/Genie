@@ -6,6 +6,7 @@ import { auth, db } from '../lib/firebase';
 interface AuthState {
   user: User | null;
   userRole: 'customer' | 'provider' | null;
+  emailVerified: boolean;
   loading: boolean;
 }
 
@@ -13,6 +14,7 @@ export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     userRole: null,
+    emailVerified: false,
     loading: true
   });
 
@@ -20,6 +22,9 @@ export function useAuth() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
+          // Refresh user data to get latest email verification status
+          await user.reload();
+          
           // Fetch user role from Firestore
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           const userRole = userDoc.data()?.userType || null;
@@ -27,13 +32,15 @@ export function useAuth() {
           setAuthState({
             user,
             userRole,
+            emailVerified: user.emailVerified,
             loading: false
           });
         } catch (error) {
-          console.error('Error fetching user role:', error);
+          console.error('Error fetching user data:', error);
           setAuthState({
             user,
             userRole: null,
+            emailVerified: false,
             loading: false
           });
         }
@@ -41,6 +48,7 @@ export function useAuth() {
         setAuthState({
           user: null,
           userRole: null,
+          emailVerified: false,
           loading: false
         });
       }

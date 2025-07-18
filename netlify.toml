@@ -1,0 +1,49 @@
+[build]
+  publish = "client/dist"
+  command = "cd client && npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Production environment settings
+[context.production]
+  command = "cd client && npm run build"
+  
+[context.production.environment]
+  VITE_FIREBASE_API_KEY = "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y"
+  VITE_FIREBASE_AUTH_DOMAIN = "genie-e3e74.firebaseapp.com"
+  VITE_FIREBASE_PROJECT_ID = "genie-e3e74"
+  VITE_FIREBASE_STORAGE_BUCKET = "genie-e3e74.firebasestorage.app"
+  VITE_FIREBASE_MESSAGING_SENDER_ID = "21846163172"
+  VITE_FIREBASE_APP_ID = "1:21846163172:web:7c3a525db1061ff26ff6f1"
+  VITE_FIREBASE_MEASUREMENT_ID = "G-MBJ080XJFH"
+  VITE_API_URL = "https://genie-server-prod.netlify.app"
+
+# Test/staging environment settings
+[context.branch-deploy]
+  command = "cd client && npm run build"
+  
+[context.branch-deploy.environment]
+  VITE_FIREBASE_API_KEY = "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y"
+  VITE_FIREBASE_AUTH_DOMAIN = "genie-e3e74.firebaseapp.com"
+  VITE_FIREBASE_PROJECT_ID = "genie-e3e74"
+  VITE_FIREBASE_STORAGE_BUCKET = "genie-e3e74.firebasestorage.app"
+  VITE_FIREBASE_MESSAGING_SENDER_ID = "21846163172"
+  VITE_FIREBASE_APP_ID = "1:21846163172:web:7c3a525db1061ff26ff6f1"
+  VITE_FIREBASE_MEASUREMENT_ID = "G-MBJ080XJFH"
+  VITE_API_URL = "https://genie-server-test.netlify.app"
+
+# Redirects for SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

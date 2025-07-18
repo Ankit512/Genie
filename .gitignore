@@ -34,3 +34,4 @@ yarn-debug.log*
 yarn-error.log*
 server/src/config/serviceAccountKey.json
 server/src/config/serviceAccountKey.json
+server/config/serviceAccountKey.json
