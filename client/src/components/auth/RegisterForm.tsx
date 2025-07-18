@@ -39,15 +39,6 @@ export function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
   const [registeredUser, setRegisteredUser] = useState<UserCredential | null>(null);
-  const [resendTimer, setResendTimer] = useState(0);
-
-  // Timer for resend button
-  React.useEffect(() => {
-    if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendTimer]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -111,7 +102,7 @@ export function RegisterForm() {
   };
 
   const handleResendVerification = async () => {
-    if (!registeredUser?.user || resendTimer > 0) return;
+    if (!registeredUser?.user) return;
 
     setLoading(true);
     setError('');
@@ -119,8 +110,6 @@ export function RegisterForm() {
     try {
       await sendVerificationEmail(registeredUser.user);
       setVerificationSent(true);
-      setResendTimer(60); // 60 second cooldown
-      setError(''); // Clear any previous errors
     } catch (err: any) {
       setError(err.message || 'Failed to resend verification email');
     } finally {
@@ -141,26 +130,18 @@ export function RegisterForm() {
                 We've sent a verification email to <strong>{formData.email}</strong>.
                 Please check your inbox and click the verification link to complete your registration.
               </p>
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-sm text-red-600">{error}</p>
-                </div>
-              )}
               <div className="space-y-4">
                 <Button
                   onClick={handleResendVerification}
-                  disabled={loading || resendTimer > 0}
+                  disabled={loading}
                   variant="outline"
                   className="w-full"
                 >
-                  {loading ? 'Sending...' : resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend verification email'}
+                  {loading ? 'Sending...' : 'Resend verification email'}
                 </Button>
                 <Button variant="ghost" asChild className="w-full">
                   <Link to="/login">Return to login</Link>
                 </Button>
-                <p className="text-sm text-muted-foreground mt-4">
-                  Didn't receive the email? Check your spam folder or try resending.
-                </p>
               </div>
             </CardContent>
           </Card>

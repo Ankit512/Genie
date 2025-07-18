@@ -17,12 +17,12 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'demo-api-key',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'genie-e3e74.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'genie-e3e74',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'genie-e3e74.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || 'demo-app-id'
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
@@ -60,11 +60,7 @@ export const signInWithTwitter = () => signInWithPopup(auth, twitterProvider);
 
 // Email Verification
 export const sendVerificationEmail = (user: User) => {
-  const actionCodeSettings = {
-    url: `${window.location.origin}/verify-email`,
-    handleCodeInApp: true
-  };
-  return sendEmailVerification(user, actionCodeSettings);
+  return sendEmailVerification(user);
 };
 
 // Get current user's ID token for backend requests

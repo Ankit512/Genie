@@ -15,6 +15,9 @@ import { ProviderDashboard } from './pages/provider/ProviderDashboard';
 import { ServiceListPage } from './pages/customer/ServiceListPage';
 import { ServiceDetailPage } from './pages/customer/ServiceDetailPage';
 import { AdminTestPage } from './pages/AdminTestPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { BookingHistoryPage } from './pages/BookingHistoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { useAuth } from './hooks/useAuth';
 
 function AppRoutes() {
@@ -41,6 +44,9 @@ function AppRoutes() {
       <Route path="/services" element={<ServiceListPage />} />
       <Route path="/services/:id" element={<ServiceDetailPage />} />
       <Route path="/admin-test" element={<AdminTestPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/booking-history" element={<BookingHistoryPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
       
       {/* Customer Routes */}
       <Route

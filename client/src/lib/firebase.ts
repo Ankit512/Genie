@@ -20,7 +20,7 @@ import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y",
-  authDomain: window.location.hostname === 'localhost' ? 'localhost:5173' : "genie-e3e74.firebaseapp.com",
+  authDomain: "genie-e3e74.firebaseapp.com",
   projectId: "genie-e3e74",
   storageBucket: "genie-e3e74.firebasestorage.app",
   messagingSenderId: "21846163172",
@@ -57,12 +57,8 @@ export const loginWithEmail = async (email: string, password: string): Promise<U
 export const registerWithEmail = async (email: string, password: string): Promise<UserCredential> => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    // Send email verification with custom action URL
-    const actionCodeSettings = {
-      url: `${window.location.origin}/verify-email`,
-      handleCodeInApp: true
-    };
-    await sendEmailVerification(result.user, actionCodeSettings);
+    // Send email verification
+    await sendEmailVerification(result.user);
     return result;
   } catch (error: any) {
     throw new Error(error.message);
@@ -101,11 +97,7 @@ export const signInWithTwitter = async () => {
 
 export const sendVerificationEmail = async (user: User) => {
   try {
-    const actionCodeSettings = {
-      url: `${window.location.origin}/verify-email`,
-      handleCodeInApp: true
-    };
-    await sendEmailVerification(user, actionCodeSettings);
+    await sendEmailVerification(user);
   } catch (error: any) {
     throw new Error(error.message);
   }
