@@ -46,7 +46,7 @@ export function LandingPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="pt-32 pb-20 parallax-bg">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 fade-in">
               Home Services Made{' '}
@@ -151,7 +151,7 @@ export function LandingPage() {
 
       {/* How It Works */}
       <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 fade-in">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
             <p className="text-xl text-muted-foreground">

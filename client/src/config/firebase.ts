@@ -10,6 +10,7 @@ import {
   TwitterAuthProvider,
   signInWithPopup,
   sendEmailVerification,
+  type ActionCodeSettings,
   type User
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
@@ -60,7 +61,11 @@ export const signInWithTwitter = () => signInWithPopup(auth, twitterProvider);
 
 // Email Verification
 export const sendVerificationEmail = (user: User) => {
-  return sendEmailVerification(user);
+  const actionCodeSettings: ActionCodeSettings = {
+    url: `${window.location.origin}/login?verified=true`,
+    handleCodeInApp: true,
+  };
+  return sendEmailVerification(user, actionCodeSettings);
 };
 
 // Get current user's ID token for backend requests

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { signInWithGoogle, signInWithFacebook, signInWithTwitter, loginWithEmail, resetPassword, requireEmailVerification } from '../../lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,12 +7,31 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export function LoginForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [showResetForm, setShowResetForm] = useState(false);
+  const [verificationSuccess, setVerificationSuccess] = useState(false);
+  const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
+
+  useEffect(() => {
+    // Check if user was redirected after email verification
+    if (searchParams.get('verified') === 'true') {
+      setVerificationSuccess(true);
+      // Clear the URL parameter after 5 seconds
+      setTimeout(() => setVerificationSuccess(false), 5000);
+    }
+    
+    // Check if user was redirected after password reset
+    if (searchParams.get('reset') === 'success') {
+      setPasswordResetSuccess(true);
+      // Clear the URL parameter after 5 seconds
+      setTimeout(() => setPasswordResetSuccess(false), 5000);
+    }
+  }, [searchParams]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,6 +174,18 @@ export function LoginForm() {
 
         <Card>
           <CardContent className="pt-6">
+            {verificationSuccess && (
+              <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-md border border-green-200">
+                ✅ Email verified successfully! You can now log in.
+              </div>
+            )}
+            
+            {passwordResetSuccess && (
+              <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-md border border-green-200">
+                ✅ Password reset successful! You can now log in with your new password.
+              </div>
+            )}
+            
             {error && (
               <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md border border-destructive/20">
                 {error}

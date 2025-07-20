@@ -19,7 +19,7 @@ import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDS9BgPflbs3CVpCYE_ZlVcHgw0nOx2T2Y",
   authDomain: "genie-e3e74.firebaseapp.com",
   projectId: "genie-e3e74",
   storageBucket: "genie-e3e74.firebasestorage.app",
@@ -61,8 +61,12 @@ export const loginWithEmail = async (email: string, password: string): Promise<U
 export const registerWithEmail = async (email: string, password: string): Promise<UserCredential> => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    // Send email verification immediately
-    await sendEmailVerification(result.user);
+    // Send email verification with continue URL to redirect back to our app
+    const actionCodeSettings = {
+      url: `${window.location.origin}/login?verified=true`,
+      handleCodeInApp: false,
+    };
+    await sendEmailVerification(result.user, actionCodeSettings);
     return result;
   } catch (error: any) {
     throw new Error(error.message);
@@ -77,8 +81,12 @@ export const registerWithEmailSecure = async (email: string, password: string, u
     // Step 1: Create Firebase user
     userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Step 2: Send email verification
-    await sendEmailVerification(userCredential.user);
+    // Step 2: Send email verification with continue URL to redirect back to our app
+    const actionCodeSettings = {
+      url: `${window.location.origin}/login?verified=true`,
+      handleCodeInApp: false,
+    };
+    await sendEmailVerification(userCredential.user, actionCodeSettings);
     
     // Step 3: Create user profile in Firestore
     const userDoc = doc(db, 'users', userCredential.user.uid);
@@ -145,7 +153,12 @@ export const signInWithTwitter = async () => {
 
 export const sendVerificationEmail = async (user: User) => {
   try {
-    await sendEmailVerification(user);
+    // Send email verification with continue URL to redirect back to our app
+    const actionCodeSettings = {
+      url: `${window.location.origin}/login?verified=true`,
+      handleCodeInApp: false,
+    };
+    await sendEmailVerification(user, actionCodeSettings);
   } catch (error: any) {
     throw new Error(error.message);
   }
@@ -153,11 +166,19 @@ export const sendVerificationEmail = async (user: User) => {
 
 export const resetPassword = async (email: string) => {
   try {
-    await sendPasswordResetEmail(auth, email);
+    // Configure password reset to redirect to our custom handler
+    const actionCodeSettings = {
+      url: `${window.location.origin}/password-reset`,
+      handleCodeInApp: false,
+    };
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
   } catch (error: any) {
     throw new Error(error.message);
   }
 };
+
+// Export signOut function
+export { signOut } from 'firebase/auth';
 
 // Helper function to create or update user profile in Firestore
 const createOrUpdateUserProfile = async (credential: UserCredential) => {

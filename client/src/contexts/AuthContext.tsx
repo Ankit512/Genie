@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthChange } from '../lib/firebase';
+import { User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import type { User } from 'firebase/auth';
+import { db, auth } from '../lib/firebase';
+import { onAuthChange, signOut } from '../lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -38,23 +38,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const unsubscribe = onAuthChange(async (user) => {
-      setUser(user);
-      
       if (user) {
         try {
-          // Check email verification status
-          await user.reload(); // Refresh user data
-          setEmailVerified(user.emailVerified);
+          // Always refresh user data to get latest email verification status
+          await user.reload();
           
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            setUserRole(userDoc.data().userType);
+          // Check if email is verified
+          if (user.emailVerified) {
+            // Email is verified - user can access the app
+            setUser(user);
+            setEmailVerified(true);
+            
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+              setUserRole(userDoc.data().userType);
+            }
+          } else {
+            // Email is NOT verified - treat as unauthenticated
+            console.log('User email not verified, signing out...');
+            setUser(null);
+            setEmailVerified(false);
+            setUserRole(null);
+            
+            // Sign out the user to prevent access to the app
+            await signOut(auth);
           }
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error('Error checking user verification:', error);
+          setUser(null);
           setEmailVerified(false);
+          setUserRole(null);
         }
       } else {
+        // No user signed in
+        setUser(null);
         setUserRole(null);
         setEmailVerified(false);
       }

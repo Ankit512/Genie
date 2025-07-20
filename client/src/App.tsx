@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Navigation } from './components/shared/Navigation';
 import { LiveChatWidget } from './components/shared/LiveChatWidget';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
+import { EmailVerificationHandler } from './components/auth/EmailVerificationHandler';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { AboutPage } from './pages/AboutPage';
@@ -41,6 +42,7 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
+      <Route path="/verify-email" element={<EmailVerificationHandler />} />
       <Route path="/services" element={<ServiceListPage />} />
       <Route path="/services/:id" element={<ServiceDetailPage />} />
       <Route path="/admin-test" element={<AdminTestPage />} />
@@ -87,6 +89,26 @@ function AppRoutes() {
   );
 }
 
+function AppContent() {
+  const location = useLocation();
+  
+  // Pages where chatbot should be hidden
+  const hideChatbotPages = ['/login', '/register', '/verify-email'];
+  const shouldHideChatbot = hideChatbotPages.includes(location.pathname);
+
+  return (
+    <AuthProvider>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main>
+          <AppRoutes />
+        </main>
+        {!shouldHideChatbot && <LiveChatWidget />}
+      </div>
+    </AuthProvider>
+  );
+}
+
 function App() {
   // Clear any existing theme preference to ensure light mode on load
   useEffect(() => {
@@ -98,15 +120,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="genie-ui-theme">
       <Router basename={import.meta.env.PROD ? '/Genie/' : ''}>
-        <AuthProvider>
-          <div className="min-h-screen bg-background">
-            <Navigation />
-            <main>
-              <AppRoutes />
-            </main>
-            <LiveChatWidget />
-          </div>
-        </AuthProvider>
+        <AppContent />
       </Router>
     </ThemeProvider>
   );
