@@ -154,12 +154,8 @@ export const sendVerificationEmail = async (user: User) => {
 
 export const resetPassword = async (email: string) => {
   try {
-    // Configure password reset to redirect to our custom handler
-    const actionCodeSettings = {
-      url: `${window.location.origin}/password-reset`,
-      handleCodeInApp: false,
-    };
-    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    // Use Firebase's default password reset system
+    await sendPasswordResetEmail(auth, email);
   } catch (error: any) {
     throw new Error(error.message);
   }
