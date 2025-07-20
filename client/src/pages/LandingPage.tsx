@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -28,15 +28,22 @@ const ANIMATED_WORDS = ['Simple', 'Easy', 'Fast', 'Affordable'];
 export function LandingPage() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Handle email verification redirect
+  useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      navigate('/login?verified=true');
+    }
+  }, [searchParams, navigate]);
 
   // Animated text effect
   useEffect(() => {
+    setIsAnimating(true);
     const interval = setInterval(() => {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setCurrentWordIndex((prev) => (prev + 1) % ANIMATED_WORDS.length);
-        setIsAnimating(false);
-      }, 300); // Half of the fade duration
+      setCurrentWordIndex((prev) => (prev + 1) % ANIMATED_WORDS.length);
+      setIsAnimating(false);
     }, 2000); // Change word every 2 seconds
 
     return () => clearInterval(interval);
