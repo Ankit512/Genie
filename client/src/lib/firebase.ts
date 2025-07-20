@@ -63,7 +63,7 @@ export const registerWithEmail = async (email: string, password: string): Promis
     const result = await createUserWithEmailAndPassword(auth, email, password);
     // Send email verification with continue URL to redirect back to our app
     const actionCodeSettings = {
-      url: `${window.location.origin}/?verified=true`,
+      url: `https://ankit512.github.io/Genie/?verified=true`,
       handleCodeInApp: false,
     };
     await sendEmailVerification(result.user, actionCodeSettings);
@@ -83,7 +83,7 @@ export const registerWithEmailSecure = async (email: string, password: string, u
     
     // Step 2: Send email verification with continue URL to redirect back to our app
     const actionCodeSettings = {
-      url: `${window.location.origin}/?verified=true`,
+      url: `https://ankit512.github.io/Genie/?verified=true`,
       handleCodeInApp: false,
     };
     await sendEmailVerification(userCredential.user, actionCodeSettings);
@@ -155,7 +155,7 @@ export const sendVerificationEmail = async (user: User) => {
   try {
     // Send email verification with continue URL to redirect back to our app
     const actionCodeSettings = {
-      url: `${window.location.origin}/?verified=true`,
+      url: `https://ankit512.github.io/Genie/?verified=true`,
       handleCodeInApp: false,
     };
     await sendEmailVerification(user, actionCodeSettings);
