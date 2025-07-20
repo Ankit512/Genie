@@ -61,12 +61,8 @@ export const loginWithEmail = async (email: string, password: string): Promise<U
 export const registerWithEmail = async (email: string, password: string): Promise<UserCredential> => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    // Send email verification with continue URL to redirect back to our app
-    const actionCodeSettings = {
-      url: `https://ankit512.github.io/Genie/?verified=true`,
-      handleCodeInApp: false,
-    };
-    await sendEmailVerification(result.user, actionCodeSettings);
+    // Send email verification using Firebase's default page
+    await sendEmailVerification(result.user);
     return result;
   } catch (error: any) {
     throw new Error(error.message);
@@ -81,12 +77,8 @@ export const registerWithEmailSecure = async (email: string, password: string, u
     // Step 1: Create Firebase user
     userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Step 2: Send email verification with continue URL to redirect back to our app
-    const actionCodeSettings = {
-      url: `https://ankit512.github.io/Genie/?verified=true`,
-      handleCodeInApp: false,
-    };
-    await sendEmailVerification(userCredential.user, actionCodeSettings);
+    // Step 2: Send email verification using Firebase's default page
+    await sendEmailVerification(userCredential.user);
     
     // Step 3: Create user profile in Firestore
     const userDoc = doc(db, 'users', userCredential.user.uid);
@@ -153,12 +145,8 @@ export const signInWithTwitter = async () => {
 
 export const sendVerificationEmail = async (user: User) => {
   try {
-    // Send email verification with continue URL to redirect back to our app
-    const actionCodeSettings = {
-      url: `https://ankit512.github.io/Genie/?verified=true`,
-      handleCodeInApp: false,
-    };
-    await sendEmailVerification(user, actionCodeSettings);
+    // Send email verification using Firebase's default page
+    await sendEmailVerification(user);
   } catch (error: any) {
     throw new Error(error.message);
   }
