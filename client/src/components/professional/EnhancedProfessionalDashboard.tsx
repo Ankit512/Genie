@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useProfessionalAuth } from '@/hooks/useProfessionalAuth';
-import { getAvailableJobs, searchJobs, createBid, getBidsForProfessional, Job as FirebaseJob, Bid } from '@/lib/firebase-jobs';
+import { getAvailableJobs, createBid, Job as FirebaseJob } from '@/lib/firebase-jobs';
 import { JobBiddingModal } from './JobBiddingModal';
 
 // Extended Job interface for display purposes

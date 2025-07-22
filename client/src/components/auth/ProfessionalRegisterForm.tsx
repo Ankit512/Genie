@@ -15,8 +15,7 @@ import {
   UserPlus
 } from 'lucide-react';
 import { 
-  registerProfessionalWithEmail, 
-  sendProfessionalEmailVerification 
+  registerProfessionalWithEmail
 } from '@/lib/firebase-professional';
 import { useProfessionalAuth } from '@/hooks/useProfessionalAuth';
 

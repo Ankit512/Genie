@@ -63,51 +63,13 @@ const CITIZENSHIP_OPTIONS = [
   'Non-EU (Work Visa Required)'
 ];
 
-const QUALIFICATION_OPTIONS = [
-  'High School Diploma',
-  'Trade Certificate',
-  'Diploma',
-  'Bachelor\'s Degree',
-  'Master\'s Degree',
-  'Professional Certification',
-  'Industry License',
-  'Other'
-];
 
-const WORKING_HOURS_OPTIONS = [
-  'Monday 9AM-5PM',
-  'Tuesday 9AM-5PM',
-  'Wednesday 9AM-5PM',
-  'Thursday 9AM-5PM',
-  'Friday 9AM-5PM',
-  'Saturday 9AM-5PM',
-  'Sunday 9AM-5PM',
-  'Evenings (6PM-10PM)',
-  'Weekends Only',
-  'Flexible Hours'
-];
 
-const TRANSPORT_OPTIONS = [
-  'Own Car',
-  'Public Transport',
-  'Bicycle',
-  'Walking',
-  'Company Vehicle',
-  'Client Provides Transport'
-];
 
-const COVERAGE_AREAS = [
-  'Dublin City Centre',
-  'Dublin North',
-  'Dublin South',
-  'Dublin West',
-  'Cork City',
-  'Galway City',
-  'Limerick City',
-  'Waterford City',
-  'Other Urban Areas',
-  'Rural Areas'
-];
+
+
+
+
 
 const SERVICE_CATEGORIES = {
   'Cleaning & Pest Control': [
@@ -181,32 +143,11 @@ export function ImprovedProfessionalOnboardingForm() {
     }));
   };
 
-  const toggleQualification = (qualification: string) => {
-    setFormData(prev => ({
-      ...prev,
-      qualifications: prev.qualifications.includes(qualification)
-        ? prev.qualifications.filter(q => q !== qualification)
-        : [...prev.qualifications, qualification]
-    }));
-  };
 
-  const toggleWorkingHour = (hour: string) => {
-    setFormData(prev => ({
-      ...prev,
-      workingHours: prev.workingHours.includes(hour)
-        ? prev.workingHours.filter(h => h !== hour)
-        : [...prev.workingHours, hour]
-    }));
-  };
 
-  const toggleCoverageArea = (area: string) => {
-    setFormData(prev => ({
-      ...prev,
-      coverageAreas: prev.coverageAreas.includes(area)
-        ? prev.coverageAreas.filter(a => a !== area)
-        : [...prev.coverageAreas, area]
-    }));
-  };
+
+
+
 
   const validateForm = (): string[] => {
     const errors: string[] = [];
