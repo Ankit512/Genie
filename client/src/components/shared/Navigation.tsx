@@ -37,6 +37,9 @@ export function Navigation() {
             <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </Link>
+            <Link to="/professional" className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+              Join as Professional
+            </Link>
           </div>
 
           {/* Actions */}

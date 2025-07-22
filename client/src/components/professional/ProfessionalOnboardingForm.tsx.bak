@@ -1,0 +1,579 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, User, MapPin, Briefcase, FileText } from 'lucide-react';
+
+interface ProfessionalFormData {
+  // Personal Details
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  
+  // Address
+  address: string;
+  city: string;
+  county: string;
+  eircode: string;
+  
+  // Citizenship & Work Authorization
+  citizenshipStatus: string;
+  visaType?: string;
+  visaExpiryDate?: string;
+  
+  // Professional Details
+  services: string[];
+  experience: string;
+  qualifications: string;
+  ppsnNumber: string;
+  
+  // Additional
+  aboutMe: string;
+  availability: string;
+}
+
+const IRISH_COUNTIES = [
+  'Antrim', 'Armagh', 'Carlow', 'Cavan', 'Clare', 'Cork', 'Derry', 'Donegal',
+  'Down', 'Dublin', 'Fermanagh', 'Galway', 'Kerry', 'Kildare', 'Kilkenny',
+  'Laois', 'Leitrim', 'Limerick', 'Longford', 'Louth', 'Mayo', 'Meath',
+  'Monaghan', 'Offaly', 'Roscommon', 'Sligo', 'Tipperary', 'Tyrone',
+  'Waterford', 'Westmeath', 'Wexford', 'Wicklow'
+];
+
+const SERVICES = [
+  'Home Cleaning',
+  'Plumbing',
+  'Electrical Work',
+  'Painting & Decorating',
+  'Gardening & Landscaping',
+  'Handyman Services',
+  'Appliance Repair',
+  'Pest Control',
+  'Carpet Cleaning',
+  'Window Cleaning',
+  'Moving & Removal',
+  'Beauty & Wellness',
+  'Tutoring',
+  'Pet Care',
+  'Catering',
+  'Photography',
+  'IT Support',
+  'Other'
+];
+
+const VISA_TYPES = [
+  'Work Permit (General)',
+  'Critical Skills Employment Permit',
+  'Intra-Company Transfer Permit',
+  'Dependant/Partner/Spouse Permit',
+  'Graduate Scheme',
+  'Working Holiday Visa',
+  'Student Visa with Work Permission',
+  'Other Work Authorization'
+];
+
+const CITIZENSHIP_OPTIONS = [
+  { value: 'irish', label: 'Irish Citizen' },
+  { value: 'eu', label: 'EU/EEA Citizen' },
+  { value: 'non-eu', label: 'Non-EU Citizen' }
+];
+
+export const ProfessionalOnboardingForm: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<ProfessionalFormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    address: '',
+    city: '',
+    county: '',
+    eircode: '',
+    citizenshipStatus: '',
+    services: [],
+    experience: '',
+    qualifications: '',
+    ppsnNumber: '',
+    aboutMe: '',
+    availability: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const updateFormData = (field: keyof ProfessionalFormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleServiceToggle = (service: string) => {
+    setFormData(prev => ({
+      ...prev,
+      services: prev.services.includes(service)
+        ? prev.services.filter(s => s !== service)
+        : [...prev.services, service]
+    }));
+  };
+
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        return !!(formData.firstName && formData.lastName && formData.email && formData.phone && formData.dateOfBirth);
+      case 2:
+        return !!(formData.address && formData.city && formData.county && formData.eircode);
+      case 3:
+        const citizenshipValid = !!formData.citizenshipStatus;
+        const visaValid = formData.citizenshipStatus === 'non-eu' 
+          ? !!(formData.visaType && formData.visaExpiryDate)
+          : true;
+        return citizenshipValid && visaValid && !!formData.ppsnNumber;
+      case 4:
+        return formData.services.length > 0 && !!formData.experience;
+      default:
+        return true;
+    }
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, 5));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const submitApplication = async () => {
+    setLoading(true);
+    try {
+      // Send email with form data
+      const response = await fetch('/api/professional/submit-application', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        throw new Error('Failed to submit application');
+      }
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Failed to submit application. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
+            <p className="text-gray-600 mb-4">
+              Thank you for your interest in joining our professional network. 
+              We've received your application and will review it within 2-3 business days.
+            </p>
+            <p className="text-sm text-gray-500">
+              You'll receive an email confirmation shortly at {formData.email}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-6">
+              <User className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold">Personal Information</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name *</Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => updateFormData('firstName', e.target.value)}
+                  placeholder="Enter your first name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name *</Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => updateFormData('lastName', e.target.value)}
+                  placeholder="Enter your last name"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="email">Email Address *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => updateFormData('email', e.target.value)}
+                placeholder="your.email@example.com"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => updateFormData('phone', e.target.value)}
+                placeholder="+353 XX XXX XXXX"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+              <Input
+                id="dateOfBirth"
+                type="date"
+                value={formData.dateOfBirth}
+                onChange={(e) => updateFormData('dateOfBirth', e.target.value)}
+              />
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-6">
+              <MapPin className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold">Address Details</h3>
+            </div>
+
+            <div>
+              <Label htmlFor="address">Street Address *</Label>
+              <Input
+                id="address"
+                value={formData.address}
+                onChange={(e) => updateFormData('address', e.target.value)}
+                placeholder="123 Main Street"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="city">City *</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => updateFormData('city', e.target.value)}
+                  placeholder="Dublin"
+                />
+              </div>
+              <div>
+                <Label htmlFor="county">County *</Label>
+                <Select value={formData.county} onValueChange={(value) => updateFormData('county', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select county" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {IRISH_COUNTIES.map((county) => (
+                      <SelectItem key={county} value={county}>
+                        {county}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="eircode">Eircode *</Label>
+              <Input
+                id="eircode"
+                value={formData.eircode}
+                onChange={(e) => updateFormData('eircode', e.target.value.toUpperCase())}
+                placeholder="D02 XY45"
+                maxLength={8}
+              />
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-6">
+              <FileText className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold">Work Authorization</h3>
+            </div>
+
+            <div>
+              <Label htmlFor="citizenshipStatus">Citizenship Status *</Label>
+              <Select value={formData.citizenshipStatus} onValueChange={(value) => updateFormData('citizenshipStatus', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your citizenship status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CITIZENSHIP_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.citizenshipStatus === 'non-eu' && (
+              <>
+                <div>
+                  <Label htmlFor="visaType">Visa/Work Permit Type *</Label>
+                  <Select value={formData.visaType || ''} onValueChange={(value) => updateFormData('visaType', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your visa type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {VISA_TYPES.map((visa) => (
+                        <SelectItem key={visa} value={visa}>
+                          {visa}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="visaExpiryDate">Visa Expiry Date *</Label>
+                  <Input
+                    id="visaExpiryDate"
+                    type="date"
+                    value={formData.visaExpiryDate || ''}
+                    onChange={(e) => updateFormData('visaExpiryDate', e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
+            <div>
+              <Label htmlFor="ppsnNumber">PPSN Number *</Label>
+              <Input
+                id="ppsnNumber"
+                value={formData.ppsnNumber}
+                onChange={(e) => updateFormData('ppsnNumber', e.target.value.toUpperCase())}
+                placeholder="1234567T"
+                maxLength={8}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Your Personal Public Service Number (required for tax purposes)
+              </p>
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-6">
+              <Briefcase className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold">Professional Details</h3>
+            </div>
+
+            <div>
+              <Label>Services You Offer * (Select all that apply)</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2 max-h-60 overflow-y-auto">
+                {SERVICES.map((service) => (
+                  <div
+                    key={service}
+                    onClick={() => handleServiceToggle(service)}
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                      formData.services.includes(service)
+                        ? 'bg-blue-50 border-blue-300 text-blue-700'
+                        : 'bg-white border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-sm">{service}</span>
+                  </div>
+                ))}
+              </div>
+              {formData.services.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">Selected services:</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {formData.services.map((service) => (
+                      <Badge key={service} variant="secondary" className="text-xs">
+                        {service}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="experience">Years of Experience *</Label>
+              <Select value={formData.experience} onValueChange={(value) => updateFormData('experience', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your experience level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0-1">0-1 years</SelectItem>
+                  <SelectItem value="2-5">2-5 years</SelectItem>
+                  <SelectItem value="6-10">6-10 years</SelectItem>
+                  <SelectItem value="10+">10+ years</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="qualifications">Qualifications & Certifications</Label>
+              <Textarea
+                id="qualifications"
+                value={formData.qualifications}
+                onChange={(e) => updateFormData('qualifications', e.target.value)}
+                placeholder="List any relevant qualifications, certifications, or training..."
+                rows={3}
+              />
+            </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-6">
+              <Upload className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold">Final Details</h3>
+            </div>
+
+            <div>
+              <Label htmlFor="aboutMe">About Me</Label>
+              <Textarea
+                id="aboutMe"
+                value={formData.aboutMe}
+                onChange={(e) => updateFormData('aboutMe', e.target.value)}
+                placeholder="Tell us about yourself, your work style, and what makes you unique..."
+                rows={4}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="availability">Availability</Label>
+              <Textarea
+                id="availability"
+                value={formData.availability}
+                onChange={(e) => updateFormData('availability', e.target.value)}
+                placeholder="When are you typically available? (e.g., Weekdays 9-5, Weekends, Evenings...)"
+                rows={2}
+              />
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">Application Review</h4>
+              <p className="text-sm text-blue-700">
+                Once you submit your application, our team will review it within 2-3 business days. 
+                You'll receive an email with the next steps if your application is approved.
+              </p>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Our Professional Network</h1>
+          <p className="text-gray-600">
+            Start earning by providing services in your area
+          </p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            {[1, 2, 3, 4, 5].map((step) => (
+              <div
+                key={step}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  step <= currentStep
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-600'
+                }`}
+              >
+                {step}
+              </div>
+            ))}
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(currentStep / 5) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Step {currentStep} of 5</CardTitle>
+            <CardDescription>
+              {currentStep === 1 && "Let's start with your basic information"}
+              {currentStep === 2 && "Where are you located?"}
+              {currentStep === 3 && "Work authorization details"}
+              {currentStep === 4 && "What services do you offer?"}
+              {currentStep === 5 && "Almost done! Final details"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {renderStepContent()}
+
+            <div className="flex justify-between mt-8">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+              >
+                Previous
+              </Button>
+
+              {currentStep < 5 ? (
+                <Button
+                  onClick={nextStep}
+                  disabled={!validateStep(currentStep)}
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  onClick={submitApplication}
+                  disabled={loading}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {loading ? 'Submitting...' : 'Submit Application'}
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};

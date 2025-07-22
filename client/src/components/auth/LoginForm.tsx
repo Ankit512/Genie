@@ -115,8 +115,11 @@ export function LoginForm() {
 
               {resetSent ? (
                 <div className="text-center">
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-muted-foreground mb-4">
                     We've sent a password reset link to your email address.
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    After resetting your password, please return here to sign in with your new password.
                   </p>
                   <Button variant="outline" onClick={() => setShowResetForm(false)} className="w-full">
                     Back to Login

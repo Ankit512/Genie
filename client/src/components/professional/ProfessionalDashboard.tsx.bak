@@ -1,0 +1,515 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Calendar, 
+  DollarSign, 
+  Star, 
+  Clock, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  User, 
+  Briefcase,
+  TrendingUp,
+  CheckCircle,
+  AlertCircle,
+  Settings
+} from 'lucide-react';
+
+interface ServiceRequest {
+  id: string;
+  customerName: string;
+  service: string;
+  date: string;
+  time: string;
+  location: string;
+  status: 'pending' | 'accepted' | 'in-progress' | 'completed' | 'cancelled';
+  price: number;
+  description: string;
+}
+
+interface Professional {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  services: string[];
+  rating: number;
+  totalJobs: number;
+  totalEarnings: number;
+  joinDate: string;
+  status: 'pending' | 'approved' | 'suspended';
+  profileImage?: string;
+}
+
+export const ProfessionalDashboard: React.FC = () => {
+  const [professional, setProfessional] = useState<Professional | null>(null);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+
+  // Mock data - replace with actual API calls
+  useEffect(() => {
+    // Simulate API call
+    setTimeout(() => {
+      setProfessional({
+        id: '1',
+        firstName: 'John',
+        lastName: 'Smith',
+        email: 'john.smith@example.com',
+        phone: '+353 87 123 4567',
+        services: ['Plumbing', 'Handyman Services'],
+        rating: 4.8,
+        totalJobs: 127,
+        totalEarnings: 8450,
+        joinDate: '2024-01-15',
+        status: 'approved'
+      });
+
+      setServiceRequests([
+        {
+          id: '1',
+          customerName: 'Sarah O\'Connor',
+          service: 'Plumbing',
+          date: '2024-01-25',
+          time: '14:00',
+          location: 'Dublin 2',
+          status: 'pending',
+          price: 85,
+          description: 'Kitchen sink is blocked and water is not draining properly.'
+        },
+        {
+          id: '2',
+          customerName: 'Michael Murphy',
+          service: 'Handyman Services',
+          date: '2024-01-24',
+          time: '10:00',
+          location: 'Dublin 4',
+          status: 'accepted',
+          price: 120,
+          description: 'Need to fix a squeaky door and replace some light bulbs.'
+        },
+        {
+          id: '3',
+          customerName: 'Emma Walsh',
+          service: 'Plumbing',
+          date: '2024-01-23',
+          time: '16:30',
+          location: 'Dublin 1',
+          status: 'completed',
+          price: 95,
+          description: 'Bathroom tap replacement.'
+        }
+      ]);
+
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'in-progress': return 'bg-purple-100 text-purple-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleRequestAction = (requestId: string, action: 'accept' | 'decline') => {
+    setServiceRequests(prev => 
+      prev.map(request => 
+        request.id === requestId 
+          ? { ...request, status: action === 'accept' ? 'accepted' : 'cancelled' }
+          : request
+      )
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!professional) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h2>
+            <p className="text-gray-600">
+              Your professional account is not yet approved or there was an error loading your profile.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const pendingRequests = serviceRequests.filter(r => r.status === 'pending');
+  const thisMonthEarnings = serviceRequests
+    .filter(r => r.status === 'completed' && new Date(r.date).getMonth() === new Date().getMonth())
+    .reduce((sum, r) => sum + r.price, 0);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <User className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">
+                  Welcome back, {professional.firstName}!
+                </h1>
+                <p className="text-sm text-gray-500">Professional Dashboard</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Verified Professional
+              </Badge>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="requests">
+              Service Requests
+              {pendingRequests.length > 0 && (
+                <Badge className="ml-2 bg-red-500 text-white text-xs">
+                  {pendingRequests.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="earnings">Earnings</TabsTrigger>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{professional.totalJobs}</div>
+                  <p className="text-xs text-muted-foreground">
+                    +12% from last month
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">This Month</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">€{thisMonthEarnings}</div>
+                  <p className="text-xs text-muted-foreground">
+                    +8% from last month
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Rating</CardTitle>
+                  <Star className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{professional.rating}</div>
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 mr-1" />
+                    Based on 89 reviews
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pending</CardTitle>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{pendingRequests.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Requests awaiting response
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Service Requests</CardTitle>
+                <CardDescription>
+                  Your latest customer requests and bookings
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {serviceRequests.slice(0, 3).map((request) => (
+                    <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3">
+                          <div>
+                            <p className="font-medium">{request.customerName}</p>
+                            <p className="text-sm text-gray-500">{request.service}</p>
+                          </div>
+                          <Badge className={getStatusColor(request.status)}>
+                            {request.status}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            {new Date(request.date).toLocaleDateString()} at {request.time}
+                          </div>
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 mr-1" />
+                            {request.location}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">€{request.price}</p>
+                        {request.status === 'pending' && (
+                          <div className="flex space-x-2 mt-2">
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleRequestAction(request.id, 'accept')}
+                            >
+                              Accept
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleRequestAction(request.id, 'decline')}
+                            >
+                              Decline
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="requests" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>All Service Requests</CardTitle>
+                <CardDescription>
+                  Manage your customer requests and bookings
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {serviceRequests.map((request) => (
+                    <div key={request.id} className="border rounded-lg p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <h3 className="font-semibold text-lg">{request.customerName}</h3>
+                            <Badge className={getStatusColor(request.status)}>
+                              {request.status}
+                            </Badge>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Briefcase className="h-4 w-4 mr-2" />
+                              {request.service}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Calendar className="h-4 w-4 mr-2" />
+                              {new Date(request.date).toLocaleDateString()} at {request.time}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              {request.location}
+                            </div>
+                          </div>
+
+                          <p className="text-gray-700 mb-4">{request.description}</p>
+                        </div>
+
+                        <div className="text-right ml-6">
+                          <p className="text-2xl font-bold text-green-600">€{request.price}</p>
+                          {request.status === 'pending' && (
+                            <div className="flex space-x-2 mt-4">
+                              <Button 
+                                onClick={() => handleRequestAction(request.id, 'accept')}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                Accept Job
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                onClick={() => handleRequestAction(request.id, 'decline')}
+                              >
+                                Decline
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="earnings" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Total Earnings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-600">
+                    €{professional.totalEarnings.toLocaleString()}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">All time earnings</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>This Month</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">€{thisMonthEarnings}</div>
+                  <div className="flex items-center text-sm text-green-600 mt-2">
+                    <TrendingUp className="h-4 w-4 mr-1" />
+                    +8% from last month
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Average per Job</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    €{Math.round(professional.totalEarnings / professional.totalJobs)}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">Based on completed jobs</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Earnings History */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Payments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {serviceRequests
+                    .filter(r => r.status === 'completed')
+                    .map((request) => (
+                      <div key={request.id} className="flex items-center justify-between py-3 border-b last:border-b-0">
+                        <div>
+                          <p className="font-medium">{request.service}</p>
+                          <p className="text-sm text-gray-500">
+                            {request.customerName} • {new Date(request.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-green-600">+€{request.price}</p>
+                          <p className="text-xs text-gray-500">Completed</p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="profile" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Professional Profile</CardTitle>
+                <CardDescription>
+                  Manage your professional information and services
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3">Contact Information</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm">
+                        <User className="h-4 w-4 mr-2 text-gray-400" />
+                        {professional.firstName} {professional.lastName}
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                        {professional.email}
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                        {professional.phone}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-3">Services Offered</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {professional.services.map((service) => (
+                        <Badge key={service} variant="secondary">
+                          {service}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t">
+                  <Button className="mr-4">Edit Profile</Button>
+                  <Button variant="outline">Manage Services</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
