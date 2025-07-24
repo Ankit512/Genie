@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,6 @@ import {
   Phone,
   MapPin,
   Briefcase,
-  Calendar,
   FileText,
   Loader2,
   AlertCircle
@@ -21,20 +20,16 @@ import {
 import { 
   collection, 
   query, 
-  where, 
   orderBy, 
   getDocs, 
   doc, 
   updateDoc, 
   serverTimestamp,
-  deleteDoc,
   addDoc
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { format } from 'date-fns';
 import { sendProfessionalApprovalEmail, sendProfessionalRejectionEmail } from '@/lib/admin-notifications';
-import { auth } from '@/config/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 interface ProfessionalApplication {
   id: string;
