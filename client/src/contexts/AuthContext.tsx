@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { User } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { db, auth, onAuthChange, signOut, getUserRole } from '../lib/firebase';
+import { auth, onAuthChange, signOut, getUserRole } from '../lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -26,7 +25,7 @@ export function useAuthContext() {
 }
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
