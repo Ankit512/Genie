@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db, getUserRole } from '../lib/firebase';
+import { auth, getUserRole } from '../lib/firebase';
 
 interface AuthState {
   user: User | null;

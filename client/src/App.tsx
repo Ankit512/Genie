@@ -24,7 +24,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { ProfessionalOnboarding } from './pages/ProfessionalOnboarding';
 
 import { ProfessionalLogin } from './pages/ProfessionalLogin';
-import { ProfessionalRegister } from './pages/ProfessionalRegister';
+// import { ProfessionalRegister } from './pages/ProfessionalRegister';
 import ProfessionalHero from './pages/ProfessionalHero';
 import { EnhancedProfessionalDashboard } from './components/professional/EnhancedProfessionalDashboard';
 import { useAuth } from './hooks/useAuth';

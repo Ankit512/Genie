@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { 
   Eye, 
   EyeOff, 
-  Mail, 
   Lock, 
   AlertCircle, 
   CheckCircle, 
