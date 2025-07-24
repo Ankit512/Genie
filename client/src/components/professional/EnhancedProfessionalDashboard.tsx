@@ -166,6 +166,23 @@ export function EnhancedProfessionalDashboard() {
     );
   }
 
+  if (professionalProfile && professionalProfile.needsOnboarding) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Complete Your Onboarding</h2>
+            <p className="text-gray-600 mb-4">To access your dashboard and start receiving jobs, please complete your professional onboarding questionnaire.</p>
+            <Button onClick={() => window.location.href = '/professional/onboarding'}>
+              Start Onboarding
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Dashboard Header */}

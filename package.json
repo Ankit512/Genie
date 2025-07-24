@@ -8,6 +8,7 @@
     "install:all": "npm install && cd client && npm install && cd ../server && npm install"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.7",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "firebase": "^11.10.0",

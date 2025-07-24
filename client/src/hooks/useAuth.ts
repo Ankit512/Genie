@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
+import { auth, db, getUserRole } from '../lib/firebase';
 
 interface AuthState {
   user: User | null;
-  userRole: 'customer' | 'provider' | null;
+  userRole: 'customer' | 'provider' | 'admin' | null;
   emailVerified: boolean;
   loading: boolean;
 }
@@ -25,9 +25,8 @@ export function useAuth() {
           // Refresh user data to get latest email verification status
           await user.reload();
           
-          // Fetch user role from Firestore
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const userRole = userDoc.data()?.userType || null;
+          // Get user role including admin check
+          const userRole = await getUserRole(user);
           
           setAuthState({
             user,

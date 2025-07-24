@@ -110,7 +110,7 @@ export function ProfessionalNavigation() {
                 <Link to="/professional/login">
                   <Button variant="outline" size="sm">Sign In</Button>
                 </Link>
-                <Link to="/professional/register">
+                <Link to="/professional/application">
                   <Button size="sm">Join as Pro</Button>
                 </Link>
               </div>

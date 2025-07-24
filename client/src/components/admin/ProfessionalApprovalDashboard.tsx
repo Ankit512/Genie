@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { collection, query, orderBy, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { professionalDb } from '@/lib/firebase-professional';
+import { sendProfessionalApprovalEmail, sendProfessionalRejectionEmail } from '@/lib/admin-notifications';
 
 interface ProfessionalApplication {
   id: string;
@@ -121,14 +122,22 @@ export function ProfessionalApprovalDashboard() {
         status: 'approved',
         updatedAt: serverTimestamp()
       });
-      
+      // Find the approved application
+      const approvedApp = applications.find(app => app.id === applicationId);
+      if (approvedApp) {
+        // Send approval email with dashboard link
+        await sendProfessionalApprovalEmail(
+          approvedApp.email,
+          approvedApp.firstName,
+          `${window.location.origin}/professional/login`
+        );
+      }
       // Update local state
       setApplications(prev => prev.map(app => 
         app.id === applicationId 
           ? { ...app, status: 'approved' as const }
           : app
       ));
-      
       setSelectedApplication(null);
     } catch (error) {
       console.error('Failed to approve application:', error);
@@ -145,14 +154,21 @@ export function ProfessionalApprovalDashboard() {
         status: 'rejected',
         updatedAt: serverTimestamp()
       });
-      
+      // Find the rejected application
+      const rejectedApp = applications.find(app => app.id === applicationId);
+      if (rejectedApp) {
+        // Send rejection email
+        await sendProfessionalRejectionEmail(
+          rejectedApp.email,
+          rejectedApp.firstName
+        );
+      }
       // Update local state
       setApplications(prev => prev.map(app => 
         app.id === applicationId 
           ? { ...app, status: 'rejected' as const }
           : app
       ));
-      
       setSelectedApplication(null);
     } catch (error) {
       console.error('Failed to reject application:', error);

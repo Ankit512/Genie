@@ -14,7 +14,7 @@ import {
   type UserCredential,
   type User
 } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -214,4 +214,27 @@ export const getIdToken = async () => {
   const user = auth.currentUser;
   if (!user) return null;
   return user.getIdToken();
+}; 
+
+// Check if user is admin
+export const isAdminUser = (email: string | null): boolean => {
+  return email === 'genietest12345@gmail.com';
+};
+
+// Get user role including admin check
+export const getUserRole = async (user: User): Promise<'customer' | 'provider' | 'admin' | null> => {
+  if (!user) return null;
+  
+  // Check if admin first
+  if (isAdminUser(user.email)) {
+    return 'admin';
+  }
+  
+  // Otherwise get role from Firestore
+  const userDoc = await getDoc(doc(db, 'users', user.uid));
+  if (userDoc.exists()) {
+    return userDoc.data().userType || null;
+  }
+  
+  return null;
 }; 

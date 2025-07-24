@@ -206,12 +206,9 @@ export function ProfessionalLoginForm() {
 
               {/* Registration Link */}
               <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  New to professional services?{' '}
-                  <Link to="/professional/register" className="text-blue-600 hover:text-blue-800 font-medium">
-                    Create account
-                  </Link>
-                </p>
+                <Link to="/professional/application">
+                  <Button variant="outline" className="w-full mb-2">Apply Now</Button>
+                </Link>
               </div>
 
               {/* Back to Customer Portal */}

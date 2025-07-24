@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { db, auth } from '../lib/firebase';
-import { onAuthChange, signOut } from '../lib/firebase';
+import { db, auth, onAuthChange, signOut, getUserRole } from '../lib/firebase';
 
 interface AuthContextType {
   user: User | null;
-  userRole: 'customer' | 'provider' | null;
+  userRole: 'customer' | 'provider' | 'admin' | null;
   loading: boolean;
   emailVerified: boolean;
 }
@@ -32,7 +31,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<'customer' | 'provider' | null>(null);
+  const [userRole, setUserRole] = useState<'customer' | 'provider' | 'admin' | null>(null);
   const [emailVerified, setEmailVerified] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -49,10 +48,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUser(user);
             setEmailVerified(true);
             
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (userDoc.exists()) {
-              setUserRole(userDoc.data().userType);
-            }
+            // Get user role including admin check
+            const role = await getUserRole(user);
+            setUserRole(role);
           } else {
             // Email is NOT verified - treat as unauthenticated
             console.log('User email not verified, signing out...');

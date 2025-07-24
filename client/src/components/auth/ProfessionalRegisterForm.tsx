@@ -35,7 +35,7 @@ export function ProfessionalRegisterForm() {
   // Redirect if already authenticated and verified
   useEffect(() => {
     if (user && emailVerified) {
-      navigate('/professional/dashboard');
+      navigate('/professional/onboarding');
     }
   }, [user, emailVerified, navigate]);
 
@@ -224,12 +224,9 @@ export function ProfessionalRegisterForm() {
           {/* Professional registration uses email/password only - no social registration */}
 
           <div className="text-center space-y-2">
-            <p className="text-sm text-gray-600">
-              Already have a professional account?{' '}
-              <Link to="/professional/login" className="text-blue-600 hover:text-blue-800 font-medium">
-                Sign In
-              </Link>
-            </p>
+            <Link to="/professional/login">
+              <Button variant="outline" className="w-full mb-2">Sign In</Button>
+            </Link>
             
             <div className="pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-500">

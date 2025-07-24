@@ -93,3 +93,98 @@ export const sendApplicationConfirmationEmail = async (
     throw new Error('Failed to send confirmation email');
   }
 };
+
+export const sendProfessionalApprovalEmail = async (
+  email: string,
+  firstName: string,
+  dashboardLink?: string
+): Promise<void> => {
+  try {
+    const response = await fetch('/api/professional/approval-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        firstName,
+        dashboardLink
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send approval email: ${response.statusText}`);
+    }
+
+    console.log('Approval email sent successfully');
+  } catch (error) {
+    console.error('Error sending approval email:', error);
+    throw new Error('Failed to send approval email');
+  }
+};
+
+export const sendProfessionalRejectionEmail = async (
+  email: string,
+  firstName: string,
+  reason?: string
+): Promise<void> => {
+  try {
+    const response = await fetch('/api/professional/rejection-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        firstName,
+        reason
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send rejection email: ${response.statusText}`);
+    }
+
+    console.log('Rejection email sent successfully');
+  } catch (error) {
+    console.error('Error sending rejection email:', error);
+    throw new Error('Failed to send rejection email');
+  }
+};
+
+export const sendProfessionalApplicationNotification = async (
+  applicantEmail: string,
+  applicantName: string,
+  applicationId: string
+): Promise<void> => {
+  try {
+    // Send notification to admin
+    await fetch('/api/professional/application-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        adminEmail: 'genietest12345@gmail.com',
+        applicantEmail,
+        applicantName,
+        applicationId
+      }),
+    });
+
+    // Send confirmation to applicant
+    await fetch('/api/professional/application-confirmation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: applicantEmail,
+        firstName: applicantName
+      }),
+    });
+  } catch (error) {
+    console.error('Failed to send application notifications:', error);
+    throw error;
+  }
+};
