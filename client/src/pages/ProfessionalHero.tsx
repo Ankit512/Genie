@@ -14,9 +14,12 @@ import {
   Heart
 } from 'lucide-react';
 
-export function ProfessionalHero() {
+const ProfessionalHero = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="text-center py-4">
+        <h1 className="text-2xl font-bold text-gray-900">Genie</h1>
+      </div>
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center">
@@ -35,9 +38,13 @@ export function ProfessionalHero() {
             Every service you provide grants someone's wish while building your income.
           </p>
           
+          <p className="text-md text-gray-700 mb-6">
+            New here? <span className="font-semibold">Create an account.</span> Already registered? <span className="font-semibold">Sign in.</span>
+          </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button size="lg" className="text-lg px-8 py-3" asChild>
-              <Link to="/professional/register">
+              <Link to="/professional/application">
                 Start Earning Today
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
@@ -235,7 +242,7 @@ export function ProfessionalHero() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="text-lg px-8 py-3" asChild>
-              <Link to="/professional/register">
+              <Link to="/professional/application">
                 Sign Up as Professional
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
@@ -247,8 +254,15 @@ export function ProfessionalHero() {
               </Link>
             </Button>
           </div>
+          <div className="mt-4">
+            <Link to="/" className="text-blue-600 hover:underline">
+              Are you a customer?
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ProfessionalHero;

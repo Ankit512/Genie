@@ -25,11 +25,15 @@ import { ProfessionalOnboarding } from './pages/ProfessionalOnboarding';
 
 import { ProfessionalLogin } from './pages/ProfessionalLogin';
 import { ProfessionalRegister } from './pages/ProfessionalRegister';
-import { ProfessionalHero } from './pages/ProfessionalHero';
+import ProfessionalHero from './pages/ProfessionalHero';
 import { EnhancedProfessionalDashboard } from './components/professional/EnhancedProfessionalDashboard';
 import { useAuth } from './hooks/useAuth';
 
 import { AdminProfessionalApproval } from './pages/AdminProfessionalApproval';
+import { AdminLogin } from './pages/AdminLogin';
+import { ProfessionalApplication } from './pages/ProfessionalApplication';
+import { AdminProfessionalApplications } from './pages/AdminProfessionalApplications';
+import { ProfessionalSignup } from './pages/ProfessionalSignup';
 
 function AppRoutes() {
   const { user, userRole, loading } = useAuth();
@@ -63,7 +67,9 @@ function AppRoutes() {
       {/* Professional Routes */}
       <Route path="/professional" element={<ProfessionalHero />} />
       <Route path="/professional/login" element={<ProfessionalLogin />} />
-      <Route path="/professional/register" element={<ProfessionalRegister />} />
+      <Route path="/professional/application" element={<ProfessionalApplication />} />
+      <Route path="/professional/signup" element={<ProfessionalSignup />} />
+      <Route path="/professional/register" element={<Navigate to="/professional/application" replace />} />
       <Route path="/professional/onboarding" element={<ProfessionalOnboarding />} />
       <Route path="/professional/dashboard" element={
         <div>
@@ -120,6 +126,8 @@ function AppRoutes() {
       />
       
       {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/professional-applications" element={<AdminProfessionalApplications />} />
       <Route path="/admin/professional-approval" element={<AdminProfessionalApproval />} />
       
       {/* Redirect based on role */}
